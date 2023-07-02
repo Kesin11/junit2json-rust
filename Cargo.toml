@@ -1,0 +1,13 @@
+[package]
+name = "junit2json"
+version = "0.1.0"
+edition = "2021"
+authors = ["Kenta Kase <kesin1202000@gmail.com>"]
+license = "MIT"
+description = "A tool convert JUnit XML format to JSON with Rust"
+repository = "https://github.com/Kesin11/junit2json-rust"
+homepage = "https://github.com/Kesin11/junit2json-rust"
+keywords = ["junit"]
+categories = ["development-tools::testing"]
+
+[dependencies]
