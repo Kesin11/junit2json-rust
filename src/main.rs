@@ -21,6 +21,12 @@ fn main() {
 
     println!("{:#?}", testsuites);
 
+    let json = serde_json::to_string_pretty(&testsuites).unwrap_or_else(|msg| {
+        eprintln!("serde_json error: {}", msg);
+        process::exit(1);
+    });
+    println!("{}", json);
+
     // file::write(&testsuites, &config).unwrap_or_else(|msg| {
     //     eprintln!("Write JSON error: {}", msg);
     //     process::exit(1);
