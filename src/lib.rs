@@ -1,5 +1,12 @@
 use serde::{Deserialize, Serialize};
 
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "lowercase")]
+pub enum TestSuitesOrTestSuite {
+    TestSuites(TestSuites),
+    TestSuite(TestSuite),
+}
+
 // Reference JUnit XML Schema:
 // - https://llg.cubic.org/docs/junit/
 // - https://github.com/testmoapp/junitxml/tree/main
@@ -71,7 +78,7 @@ pub struct Skipped {
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Details {
     pub message: Option<String>,
-    #[serde(rename = "type", skip_serializing_if = "Option::is_none")]
-    pub _type: Option<String>,
+    pub r#type: Option<String>,
+    #[serde(rename(deserialize = "$value"), skip_serializing_if = "Option::is_none")]
     pub inner: Option<String>,
 }
