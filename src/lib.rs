@@ -1,14 +1,16 @@
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Serialize, Serializer};
 
 // Return true if all struct in vec are equal to Default::default()
-fn is_all_default<T: PartialEq + Default>(vec: &Vec<T>) -> bool {
-    vec.iter().all(|s: &T| s == &T::default())
-}
-
+// fn is_all_default<T>(vec: &T) -> bool
+// where
+//     T: Iterator,
+//     <T as Iterator>::Item: Default + PartialEq,
+// {
+//     vec.into_iter().all(|s| s == Default::default())
+// }
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "lowercase")]
-
 pub enum TestSuitesOrTestSuite {
     TestSuites(TestSuites),
     TestSuite(TestSuite),
@@ -60,7 +62,8 @@ pub struct TestSuite {
     #[serde(rename = "system-err", skip_serializing_if = "Option::is_none")]
     pub system_err: Option<Vec<String>>,
 
-    #[serde(skip_serializing_if = "Option::is_none")]
+    // #[serde(skip_serializing_if = "Option::is_none")]
+    // #[serde(skip_serializing_if = "is_all_default")]
     pub properties: Option<Vec<Property>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub hostname: Option<String>,
@@ -130,25 +133,25 @@ pub struct Details {
     pub inner: Option<String>,
 }
 
-#[cfg(test)]
-mod tests {
-    use crate::{Property, is_all_default};
+// #[cfg(test)]
+// mod tests {
+//     use crate::{Property, is_all_default};
 
-    #[test]
-    fn all_struct_in_vec_are_none() {
-        let none_vec: Vec<Property> = vec![Property::default()];
-        assert_eq!(is_all_default(&none_vec), true);
-    }
+//     #[test]
+//     fn all_struct_in_vec_are_none() {
+//         let none_vec: Vec<Property> = vec![Property::default()];
+//         assert_eq!(is_all_default(&none_vec), true);
+//     }
 
-    #[test]
-    fn vec_is_empty() {
-        let none_vec: Vec<Property> = vec![];
-        assert_eq!(is_all_default(&none_vec), true);
-    }
+//     #[test]
+//     fn vec_is_empty() {
+//         let none_vec: Vec<Property> = vec![];
+//         assert_eq!(is_all_default(&none_vec), true);
+//     }
 
-    #[test]
-    fn some_struct_in_vec_are_not_none() {
-        let none_vec: Vec<Property> = vec![Property::default(), Property { name: Some("name".to_string()), value: Some("value".to_string()) }];
-        assert_eq!(is_all_default(&none_vec), false);
-    }
-}
+//     #[test]
+//     fn some_struct_in_vec_are_not_none() {
+//         let none_vec: Vec<Property> = vec![Property::default(), Property { name: Some("name".to_string()), value: Some("value".to_string()) }];
+//         assert_eq!(is_all_default(&none_vec), false);
+//     }
+// }
