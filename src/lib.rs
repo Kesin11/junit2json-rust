@@ -1,5 +1,14 @@
 use serde::{Deserialize, Serialize, Serializer};
 use serde_with::skip_serializing_none;
+use serde_xml_rs;
+use std::io::BufReader;
+use std::fs::File;
+
+pub mod quick;
+
+pub fn serde_xml_from_reader(reader: BufReader<File>) -> Result<TestSuitesOrTestSuite, serde_xml_rs::Error> {
+    serde_xml_rs::from_reader(reader)
+}
 
 // Return true if all struct in vec are equal to Default::default()
 // fn is_all_default<T>(vec: &T) -> bool
