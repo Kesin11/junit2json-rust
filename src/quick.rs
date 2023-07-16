@@ -1,3 +1,4 @@
+use std::default;
 use std::io;
 use std::fs;
 use quick_xml;
@@ -73,6 +74,25 @@ pub struct TestSuite {
     pub properties: Option<Vec<Property>>,
     pub testcase: Option<Vec<TestCase>>,
 }
+impl TestSuite {
+    pub fn trim_empties(&mut self) {
+        trim_default_items(&mut self.properties)
+    }
+}
+
+fn trim_default_items<T: default::Default + PartialEq + Clone>(vec: &mut Option<Vec<T>>) {
+    match vec {
+        Some(v) => {
+            *vec = v
+                .iter()
+                .filter(|&item| item != &Default::default())
+                .map(|item| item.clone())
+                .collect::<Vec<_>>()
+                .into();
+        },
+        None => {},
+    }
+}
 
 #[skip_serializing_none]
 #[derive(Serialize, Deserialize, Debug, Default)]
@@ -120,7 +140,7 @@ pub struct Details {
 }
 
 #[skip_serializing_none]
-#[derive(Serialize, Deserialize, Debug, Default, PartialEq)]
+#[derive(Serialize, Deserialize, Debug, Default, PartialEq, Clone)]
 pub struct Property {
     #[serde(rename(deserialize = "@name"))]
     pub name: Option<String>,
@@ -129,5 +149,10 @@ pub struct Property {
 }
 
 pub fn from_reader(reader: io::BufReader<fs::File>) -> Result<TestSuitesOrTestSuite, quick_xml::DeError> {
-    de::from_reader(reader)
+    let mut root: TestSuitesOrTestSuite = de::from_reader(reader)?;
+    match root {
+        TestSuitesOrTestSuite::TestSuite(ref mut ts) => { ts.trim_empties() },
+        (_) => {},
+    }
+    Ok(root)
 }
