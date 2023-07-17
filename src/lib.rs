@@ -1,6 +1,5 @@
 use std::default;
 use std::io;
-use std::fs;
 use quick_xml;
 use quick_xml::de;
 use serde::{Deserialize, Serialize};
@@ -20,7 +19,7 @@ fn trim_default_items<T: default::Default + PartialEq + Clone>(vec: &mut Option<
     }
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, PartialEq)]
 #[serde(rename_all = "lowercase")]
 pub enum TestSuitesOrTestSuite {
     TestSuites(TestSuites),
@@ -31,7 +30,7 @@ pub enum TestSuitesOrTestSuite {
 // - https://llg.cubic.org/docs/junit/
 // - https://github.com/testmoapp/junitxml/tree/main
 #[skip_serializing_none]
-#[derive(Serialize, Deserialize, Debug, Default)]
+#[derive(Serialize, Deserialize, Debug, Default, PartialEq)]
 pub struct TestSuites {
     #[serde(rename(deserialize = "@name"))]
     pub name: Option<String>,
@@ -58,7 +57,7 @@ impl TestSuites {
 }
 
 #[skip_serializing_none]
-#[derive(Serialize, Deserialize, Debug, Default)]
+#[derive(Serialize, Deserialize, Debug, Default, PartialEq)]
 pub struct TestSuite {
     #[serde(rename(deserialize = "@name"))]
     pub name: Option<String>,
@@ -114,7 +113,7 @@ impl TestSuite {
 }
 
 #[skip_serializing_none]
-#[derive(Serialize, Deserialize, Debug, Default)]
+#[derive(Serialize, Deserialize, Debug, Default, PartialEq)]
 pub struct TestCase {
     #[serde(rename(deserialize = "@name"))]
     pub name: Option<String>,
@@ -147,14 +146,14 @@ impl TestCase {
 }
 
 #[skip_serializing_none]
-#[derive(Serialize, Deserialize, Debug, Default)]
+#[derive(Serialize, Deserialize, Debug, Default, PartialEq)]
 pub struct Skipped {
     #[serde(rename(deserialize = "@message"))]
     pub message: Option<String>,
 }
 
 #[skip_serializing_none]
-#[derive(Serialize, Deserialize, Debug, Default)]
+#[derive(Serialize, Deserialize, Debug, Default, PartialEq)]
 pub struct Details {
     #[serde(rename(deserialize = "@message"))]
     pub message: Option<String>,
@@ -173,11 +172,54 @@ pub struct Property {
     pub value: Option<String>,
 }
 
-pub fn from_reader(reader: io::BufReader<fs::File>) -> Result<TestSuitesOrTestSuite, quick_xml::DeError> {
+pub fn from_reader<T>(reader: io::BufReader<T>) -> Result<TestSuitesOrTestSuite, quick_xml::DeError>
+    where T: io::Read
+    {
     let mut root: TestSuitesOrTestSuite = de::from_reader(reader)?;
     match root {
         TestSuitesOrTestSuite::TestSuites(ref mut testsuites) => { testsuites.trim_empty_items() },
         TestSuitesOrTestSuite::TestSuite(ref mut testsuite) => { testsuite.trim_empty_items() },
     }
     Ok(root)
+}
+
+pub fn from_str(s: &str) -> Result<TestSuitesOrTestSuite, quick_xml::DeError> {
+    from_reader(io::BufReader::new(s.as_bytes()))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use pretty_assertions::assert_eq;
+
+    #[test]
+    fn test_from_str() {
+        let xml = r#"
+            <testsuites>
+                <testsuite name="suite1">
+                    <testcase name="test1" classname="class1" assertions="1" time="0.1" status="passed" file="file1" line="1">
+                    </testcase>
+                </testsuite>
+            </testsuites>
+        "#;
+        let result = from_str(xml);
+        assert!(result.is_ok());
+        assert_eq!(result.unwrap(), TestSuitesOrTestSuite::TestSuites(TestSuites {
+            testsuite: Some(vec![TestSuite {
+                name: Some("suite1".to_string()),
+                testcase: Some(vec![TestCase {
+                    name: Some("test1".to_string()),
+                    classname: Some("class1".to_string()),
+                    assertions: Some(1),
+                    time: Some(0.1),
+                    status: Some("passed".to_string()),
+                    file: Some("file1".to_string()),
+                    line: Some(1),
+                    ..Default::default()
+                }]),
+                ..Default::default()
+            }]),
+            ..Default::default()
+        }));
+    }
 }
