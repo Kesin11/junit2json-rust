@@ -6,6 +6,20 @@ use quick_xml::de;
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 
+fn trim_default_items<T: default::Default + PartialEq + Clone>(vec: &mut Option<Vec<T>>) {
+    match vec {
+        Some(v) => {
+            *vec = v
+                .iter()
+                .filter(|&item| item != &Default::default())
+                .map(|item| item.clone())
+                .collect::<Vec<_>>()
+                .into();
+        },
+        None => {},
+    }
+}
+
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "lowercase")]
 pub enum TestSuitesOrTestSuite {
@@ -31,6 +45,16 @@ pub struct TestSuites {
     pub errors: Option<u32>,
 
     pub testsuite: Option<Vec<TestSuite>>,
+}
+impl TestSuites {
+    pub fn trim_empty_items(&mut self) {
+        match &mut self.testsuite {
+            Some(testsuite) => {
+                testsuite.into_iter().for_each(|item| item.trim_empty_items())
+            }
+            None => {},
+        }
+    }
 }
 
 #[skip_serializing_none]
@@ -75,22 +99,17 @@ pub struct TestSuite {
     pub testcase: Option<Vec<TestCase>>,
 }
 impl TestSuite {
-    pub fn trim_empties(&mut self) {
-        trim_default_items(&mut self.properties)
-    }
-}
+    pub fn trim_empty_items(&mut self) {
+        trim_default_items(&mut self.system_out);
+        trim_default_items(&mut self.system_err);
+        trim_default_items(&mut self.properties);
 
-fn trim_default_items<T: default::Default + PartialEq + Clone>(vec: &mut Option<Vec<T>>) {
-    match vec {
-        Some(v) => {
-            *vec = v
-                .iter()
-                .filter(|&item| item != &Default::default())
-                .map(|item| item.clone())
-                .collect::<Vec<_>>()
-                .into();
-        },
-        None => {},
+        match &mut self.testcase {
+            Some(testcase) => {
+                testcase.into_iter().for_each(|item| item.trim_empty_items())
+            }
+            None => {},
+        }
     }
 }
 
@@ -119,6 +138,12 @@ pub struct TestCase {
     pub skipped: Option<Skipped>,
     pub error: Option<Details>,
     pub failure: Option<Details>,
+}
+impl TestCase {
+    pub fn trim_empty_items(&mut self) {
+        trim_default_items(&mut self.system_out);
+        trim_default_items(&mut self.system_err);
+    }
 }
 
 #[skip_serializing_none]
@@ -151,8 +176,8 @@ pub struct Property {
 pub fn from_reader(reader: io::BufReader<fs::File>) -> Result<TestSuitesOrTestSuite, quick_xml::DeError> {
     let mut root: TestSuitesOrTestSuite = de::from_reader(reader)?;
     match root {
-        TestSuitesOrTestSuite::TestSuite(ref mut ts) => { ts.trim_empties() },
-        (_) => {},
+        TestSuitesOrTestSuite::TestSuites(ref mut testsuites) => { testsuites.trim_empty_items() },
+        TestSuitesOrTestSuite::TestSuite(ref mut testsuite) => { testsuite.trim_empty_items() },
     }
     Ok(root)
 }
