@@ -94,15 +94,23 @@ pub struct TestSuite {
     pub system_out: Option<Vec<String>>,
     #[serde(rename = "system-err")]
     pub system_err: Option<Vec<String>>,
-    pub properties: Option<Vec<Property>>,
+    pub properties: Option<Properties>,
     pub testcase: Option<Vec<TestCase>>,
 }
 impl TestSuite {
     pub fn trim_empty_items(&mut self) {
         trim_default_items(&mut self.system_out);
         trim_default_items(&mut self.system_err);
-        trim_default_items(&mut self.properties);
 
+        match &mut self.properties {
+            Some(properties) => {
+                properties.trim_empty_items();
+                if properties.property.is_none() {
+                    self.properties = None;
+                }
+            }
+            None => {},
+        }
         match &mut self.testcase {
             Some(testcase) => {
                 testcase.into_iter().for_each(|item| item.trim_empty_items())
@@ -161,6 +169,17 @@ pub struct Details {
     pub r#type: Option<String>,
     #[serde(rename(deserialize = "$value"))]
     pub inner: Option<String>,
+}
+
+#[skip_serializing_none]
+#[derive(Serialize, Deserialize, Debug, Default, PartialEq)]
+pub struct Properties {
+    property: Option<Vec<Property>>,
+}
+impl Properties {
+    pub fn trim_empty_items(&mut self) {
+        trim_default_items(&mut self.property);
+    }
 }
 
 #[skip_serializing_none]
@@ -334,7 +353,7 @@ mod tests {
         let actual = from_str(xml);
         assert_eq!(actual.unwrap(), TestSuitesOrTestSuite::TestSuites( TestSuites {
             testsuite: Some(vec![TestSuite {
-                properties: Some(vec![]),
+                properties: None,
             ..Default::default()
             }]),
         ..Default::default()
@@ -358,16 +377,49 @@ mod tests {
         let actual = from_str(xml);
         assert_eq!(actual.unwrap(), TestSuitesOrTestSuite::TestSuites( TestSuites {
             testsuite: Some(vec![TestSuite {
-                properties: Some(vec![
-                Property {
-                    name: Some("hello".to_string()),
-                    value: Some("bonjour".to_string()),
-                    ..Default::default()
-                }, Property {
-                    name: Some("world".to_string()),
-                    value: Some("monde".to_string()),
-                    ..Default::default()
-                }]),
+                properties: Some(Properties {
+                    property: Some(vec![
+                        Property {
+                            name: Some("hello".to_string()),
+                            value: Some("bonjour".to_string()),
+                            ..Default::default()
+                        }, Property {
+                            name: Some("world".to_string()),
+                            value: Some("monde".to_string()),
+                            ..Default::default()
+                        }]),
+                    }),
+            ..Default::default()
+            }]),
+        ..Default::default()
+        }));
+    }
+
+    #[test]
+    // Test when some testsuite.property are empty
+    fn test_some_testsuite_property_are_empty() {
+        let xml = r#"
+            <?xml version="1.0" encoding="UTF-8"?>
+            <testsuites>
+                <testsuite>
+                    <properties>
+                        <property name="hello" value="bonjour"/>
+                        <property/>
+                    </properties>
+                </testsuite>
+            </testsuites>
+        "#;
+        let actual = from_str(xml);
+        assert_eq!(actual.unwrap(), TestSuitesOrTestSuite::TestSuites( TestSuites {
+            testsuite: Some(vec![TestSuite {
+                properties: Some(Properties {
+                    property: Some(vec![
+                        Property {
+                            name: Some("hello".to_string()),
+                            value: Some("bonjour".to_string()),
+                            ..Default::default()
+                        }]),
+                    }),
             ..Default::default()
             }]),
         ..Default::default()
