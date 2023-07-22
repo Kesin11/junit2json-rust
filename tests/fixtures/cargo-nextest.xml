@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="nextest-run" tests="18" failures="1" errors="0" uuid="d241b926-80a6-45cd-bc50-537917d0f60b" timestamp="2023-07-22T15:37:57.654+00:00" time="0.023">
+    <testsuite name="junit2json::serialize" tests="8" disabled="0" errors="0" failures="1">
+        <testcase name="skipped_testcase" classname="junit2json::serialize" timestamp="2023-07-22T15:37:57.663+00:00" time="0.007">
+        </testcase>
+        <testcase name="some_testsuite_property_are_empty" classname="junit2json::serialize" timestamp="2023-07-22T15:37:57.665+00:00" time="0.008">
+            <failure type="test failure">thread &apos;some_testsuite_property_are_empty&apos; panicked at &apos;assertion failed: `(left == right)`
+
+[1mDiff[0m [31m&lt; left[0m / [32mright &gt;[0m :
+ Object {
+     &quot;testsuites&quot;: Object {
+         &quot;testsuite&quot;: Array [
+             Object {
+                 &quot;properties&quot;: Object {
+                     &quot;property&quot;: Array [
+                         Object {
+[31m&lt;                            &quot;name&quot;: String(&quot;hell&quot;),[0m
+[32m&gt;                            &quot;name&quot;: String(&quot;hell[0m[1;48;5;22;32mo[0m[32m&quot;),[0m
+                             &quot;value&quot;: String(&quot;bonjour&quot;),
+                         },
+                     ],
+                 },
+             },
+         ],
+     },
+ }
+
+&apos;, tests/serialize.rs:259:5
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace</failure>
+            <system-out>
+running 1 test
+test some_testsuite_property_are_empty ... FAILED
+
+failures:
+
+failures:
+    some_testsuite_property_are_empty
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 7 filtered out; finished in 0.00s
+
+</system-out>
+            <system-err>thread &apos;some_testsuite_property_are_empty&apos; panicked at &apos;assertion failed: `(left == right)`
+
+[1mDiff[0m [31m&lt; left[0m / [32mright &gt;[0m :
+ Object {
+     &quot;testsuites&quot;: Object {
+         &quot;testsuite&quot;: Array [
+             Object {
+                 &quot;properties&quot;: Object {
+                     &quot;property&quot;: Array [
+                         Object {
+[31m&lt;                            &quot;name&quot;: String(&quot;hell&quot;),[0m
+[32m&gt;                            &quot;name&quot;: String(&quot;hell[0m[1;48;5;22;32mo[0m[32m&quot;),[0m
+                             &quot;value&quot;: String(&quot;bonjour&quot;),
+                         },
+                     ],
+                 },
+             },
+         ],
+     },
+ }
+
+&apos;, tests/serialize.rs:259:5
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+</system-err>
+        </testcase>
+        <testcase name="testcase_failure_has_inner" classname="junit2json::serialize" timestamp="2023-07-22T15:37:57.665+00:00" time="0.007">
+        </testcase>
+        <testcase name="testcase_system_err_has_inner" classname="junit2json::serialize" timestamp="2023-07-22T15:37:57.667+00:00" time="0.008">
+        </testcase>
+        <testcase name="testcase_system_out_has_inner" classname="junit2json::serialize" timestamp="2023-07-22T15:37:57.668+00:00" time="0.007">
+        </testcase>
+        <testcase name="testsuite_has_some_fields" classname="junit2json::serialize" timestamp="2023-07-22T15:37:57.670+00:00" time="0.005">
+        </testcase>
+        <testcase name="testsuite_property_has_some_fields" classname="junit2json::serialize" timestamp="2023-07-22T15:37:57.671+00:00" time="0.005">
+        </testcase>
+        <testcase name="testsuite_property_is_empty" classname="junit2json::serialize" timestamp="2023-07-22T15:37:57.672+00:00" time="0.005">
+        </testcase>
+    </testsuite>
+    <testsuite name="junit2json::deserialize" tests="10" disabled="0" errors="0" failures="0">
+        <testcase name="not_junit_xml" classname="junit2json::deserialize" timestamp="2023-07-22T15:37:57.654+00:00" time="0.005">
+        </testcase>
+        <testcase name="testcase_failure_has_inner" classname="junit2json::deserialize" timestamp="2023-07-22T15:37:57.656+00:00" time="0.005">
+        </testcase>
+        <testcase name="skipped_testcase" classname="junit2json::deserialize" timestamp="2023-07-22T15:37:57.655+00:00" time="0.005">
+        </testcase>
+        <testcase name="some_testsuite_property_are_empty" classname="junit2json::deserialize" timestamp="2023-07-22T15:37:57.655+00:00" time="0.005">
+        </testcase>
+        <testcase name="testcase_system_err_has_inner" classname="junit2json::deserialize" timestamp="2023-07-22T15:37:57.656+00:00" time="0.007">
+        </testcase>
+        <testcase name="testcase_system_out_has_inner" classname="junit2json::deserialize" timestamp="2023-07-22T15:37:57.656+00:00" time="0.007">
+        </testcase>
+        <testcase name="testsuite_has_some_fields" classname="junit2json::deserialize" timestamp="2023-07-22T15:37:57.659+00:00" time="0.006">
+        </testcase>
+        <testcase name="testsuite_property_has_some_fields" classname="junit2json::deserialize" timestamp="2023-07-22T15:37:57.660+00:00" time="0.006">
+        </testcase>
+        <testcase name="testsuites_properties_are_absent" classname="junit2json::deserialize" timestamp="2023-07-22T15:37:57.662+00:00" time="0.006">
+        </testcase>
+        <testcase name="testsuite_property_is_empty" classname="junit2json::deserialize" timestamp="2023-07-22T15:37:57.661+00:00" time="0.009">
+        </testcase>
+    </testsuite>
+</testsuites>
