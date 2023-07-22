@@ -30,7 +30,7 @@ fn testsuite_has_some_fields () {
 
   #[test]
   // Test when testcase.failure has inner text
-  fn test_testcase_failure_has_inner() {
+  fn testcase_failure_has_inner() {
     let xml = r#"
         <?xml version="1.0" encoding="UTF-8"?>
         <testsuites>
@@ -65,7 +65,7 @@ fn testsuite_has_some_fields () {
 
   #[test]
   // Test when testcase has skiped test
-  fn test_skipped_testcase() {
+  fn skipped_testcase() {
     let xml = r#"
         <?xml version="1.0" encoding="UTF-8"?>
         <testsuites>
@@ -101,7 +101,7 @@ fn testsuite_has_some_fields () {
 
   #[test]
   // Test when testcase.system-out has inner text
-  fn test_testcase_system_out_has_inner() {
+  fn testcase_system_out_has_inner() {
     let xml = r#"
         <?xml version="1.0" encoding="UTF-8"?>
         <testsuites>
@@ -132,7 +132,7 @@ fn testsuite_has_some_fields () {
 
   #[test]
   // Test when testcase.system-err has inner text
-  fn test_testcase_system_err_has_inner() {
+  fn testcase_system_err_has_inner() {
     let xml = r#"
         <?xml version="1.0" encoding="UTF-8"?>
         <testsuites>
@@ -163,7 +163,7 @@ fn testsuite_has_some_fields () {
 
   #[test]
   // Test when testsuite.property is empty
-  fn test_testsuite_property_is_empty() {
+  fn testsuite_property_is_empty() {
     let xml = r#"
         <?xml version="1.0" encoding="UTF-8"?>
         <testsuites>
@@ -186,7 +186,7 @@ fn testsuite_has_some_fields () {
 
   #[test]
   // Test when testsuite.property has some fields
-  fn test_testsuite_property_has_some_fields() {
+  fn testsuite_property_has_some_fields() {
     let xml = r#"
         <?xml version="1.0" encoding="UTF-8"?>
         <testsuites>
@@ -225,7 +225,7 @@ fn testsuite_has_some_fields () {
 
   #[test]
   // Test when some testsuite.property are empty
-  fn test_some_testsuite_property_are_empty() {
+  fn some_testsuite_property_are_empty() {
       let xml = r#"
           <?xml version="1.0" encoding="UTF-8"?>
           <testsuites>
