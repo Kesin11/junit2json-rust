@@ -48,11 +48,45 @@ fn testsuite_has_some_fields () {
                     "tests": 1,
                     "testcase": [
                         {
-                          "failure": [
-                              {
-                                "inner": "inner text"
-                              }
-                          ]
+                          "failure": {
+                            "inner": "inner text"
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    });
+
+    let actual = junit2json::from_str(xml).unwrap();
+    let actual_json_value = serde_json::to_value(actual).unwrap();
+    assert_eq!(actual_json_value, expect);
+  }
+
+  #[test]
+  // Test when testcase has skiped test
+  fn test_skipped_testcase() {
+    let xml = r#"
+        <?xml version="1.0" encoding="UTF-8"?>
+        <testsuites>
+            <testsuite tests="1" skipped="1">
+                <testcase>
+                    <skipped message="skip reason" />
+                </testcase>
+            </testsuite>
+        </testsuites>
+    "#;
+    let expect = json!({
+        "testsuites": {
+            "testsuite": [
+                {
+                    "tests": 1,
+                    "skipped": 1,
+                    "testcase": [
+                        {
+                          "skipped": {
+                            "message": "skip reason"
+                            }
                         }
                     ]
                 }

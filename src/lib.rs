@@ -142,9 +142,9 @@ pub struct TestCase {
     pub system_out: Option<Vec<String>>,
     #[serde(rename = "system-err")]
     pub system_err: Option<Vec<String>>,
-    pub skipped: Option<Skipped>,
-    pub error: Option<Details>,
-    pub failure: Option<Details>,
+    pub skipped: Option<Detail>,
+    pub error: Option<Detail>,
+    pub failure: Option<Detail>,
 }
 impl TestCase {
     pub fn trim_empty_items(&mut self) {
@@ -155,14 +155,7 @@ impl TestCase {
 
 #[skip_serializing_none]
 #[derive(Serialize, Deserialize, Debug, Default, PartialEq)]
-pub struct Skipped {
-    #[serde(rename(deserialize = "@message"))]
-    pub message: Option<String>,
-}
-
-#[skip_serializing_none]
-#[derive(Serialize, Deserialize, Debug, Default, PartialEq)]
-pub struct Details {
+pub struct Detail {
     #[serde(rename(deserialize = "@message"))]
     pub message: Option<String>,
     #[serde(rename(deserialize = "@type"))]

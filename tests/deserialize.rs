@@ -65,8 +65,39 @@
           testsuite: Some(vec![TestSuite {
               tests: Some(1),
               testcase: Some(vec![TestCase {
-                  failure: Some(Details {
+                  failure: Some(Detail {
                       inner: Some("inner text".to_string()),
+                      ..Default::default()
+                  }),
+              ..Default::default()
+              }]),
+          ..Default::default()
+          }]),
+      ..Default::default()
+      }));
+  }
+
+  #[test]
+  // Test when testcase has skiped test
+  fn test_skipped_testcase() {
+      let xml = r#"
+          <?xml version="1.0" encoding="UTF-8"?>
+          <testsuites>
+              <testsuite tests="1" skipped="1">
+                  <testcase>
+                      <skipped message="skip reason" />
+                  </testcase>
+              </testsuite>
+          </testsuites>
+      "#;
+      let actual = from_str(xml);
+      assert_eq!(actual.unwrap(), TestSuitesOrTestSuite::TestSuites( TestSuites {
+          testsuite: Some(vec![TestSuite {
+              tests: Some(1),
+              skipped: Some(1),
+              testcase: Some(vec![TestCase {
+                  skipped: Some(Detail {
+                      message: Some("skip reason".to_string()),
                       ..Default::default()
                   }),
               ..Default::default()
