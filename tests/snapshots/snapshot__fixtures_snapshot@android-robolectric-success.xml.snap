@@ -1,0 +1,35 @@
+---
+source: tests/snapshot.rs
+expression: testsuites
+input_file: tests/fixtures/android-robolectric-success.xml
+---
+{
+  "testsuite": {
+    "name": "com.google.samples.apps.sunflower.RobolectricGardenActivityTest2",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "time": 43.444,
+    "skipped": 0,
+    "timestamp": "2020-07-12T03:33:52",
+    "hostname": "fv-az88",
+    "system-out": [
+      "Downloading from maven \n[Robolectric] com.google.samples.apps.sunflower.RobolectricGardenActivityTest2.gardenActivityTest2: sdk=28; resources=BINARY\nCalled loadFromPath(/system/framework/framework-res.apk, true); mode=binary sdk=28\n***goPlantList\n***showPlantDetail\n***addToMyGarden\n***goBackPlantList\n***goMyGarden\n***assertPlanted\n[Robolectric] com.google.samples.apps.sunflower.RobolectricGardenActivityTest2.gardenActivityTest_Eggplant: sdk=28; resources=BINARY\n***goPlantList\n***showPlantDetail\n***addToMyGarden\n***goBackPlantList\n***goMyGarden\n***assertPlanted\n"
+    ],
+    "system-err": [
+      "[Robolectric] WARN: Android SDK 29 requires Java 9 (have Java 8). Tests won't be run on SDK 29 unless explicitly requested.\nDownloading: org/robolectric/android-all/9-robolectric-4913185-2/android-all-9-robolectric-4913185-2.pom from repository sonatype at https://oss.sonatype.org/content/groups/public/\nTransferring 2K from sonatype\nDownloading: org/sonatype/oss/oss-parent/9/oss-parent-9.pom from repository sonatype at https://oss.sonatype.org/content/groups/public/\nTransferring 6K from sonatype\nDownloading: org/robolectric/android-all/9-robolectric-4913185-2/android-all-9-robolectric-4913185-2.jar from repository sonatype at https://oss.sonatype.org/content/groups/public/\nTransferring 118099K from sonatype\n"
+    ],
+    "testcase": [
+      {
+        "name": "gardenActivityTest2",
+        "classname": "com.google.samples.apps.sunflower.RobolectricGardenActivityTest2",
+        "time": 29.876
+      },
+      {
+        "name": "gardenActivityTest_Eggplant",
+        "classname": "com.google.samples.apps.sunflower.RobolectricGardenActivityTest2",
+        "time": 13.568
+      }
+    ]
+  }
+}

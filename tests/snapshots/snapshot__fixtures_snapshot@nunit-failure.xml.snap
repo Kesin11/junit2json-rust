@@ -1,0 +1,56 @@
+---
+source: tests/snapshot.rs
+expression: testsuites
+input_file: tests/fixtures/nunit-failure.xml
+---
+{
+  "testsuites": {
+    "name": "Tutorial.Tests.dll",
+    "time": 0.0105824,
+    "tests": 4,
+    "failures": 1,
+    "testsuite": [
+      {
+        "name": "Tutorial.Tests.dll",
+        "tests": 4,
+        "failures": 1,
+        "errors": 0,
+        "time": 0.0105824,
+        "skipped": 0,
+        "timestamp": "2019-12-31T 09:33:25Z",
+        "hostname": "executor://xunit/VsTestRunner2/netcoreapp",
+        "testcase": [
+          {
+            "name": "Tutorial.Tests.PersonClassTest.PersonClass_ToString",
+            "classname": "Tutorial.Tests.PersonClassTest",
+            "time": 0.0039775,
+            "file": "/Users/kesin/github/csharp-tutorial/tests/Tutorial.Tests/bin/Debug/netcoreapp3.1/Tutorial.Tests.dll"
+          },
+          {
+            "name": "Tutorial.Tests.PersonTest.Person_fname",
+            "classname": "Tutorial.Tests.PersonTest",
+            "time": 0.0063612,
+            "file": "/Users/kesin/github/csharp-tutorial/tests/Tutorial.Tests/bin/Debug/netcoreapp3.1/Tutorial.Tests.dll",
+            "failure": {
+              "message": "Assert.Equal() Failure\n          ↓ (pos 0)\nExpected: foge\nActual:   john\n          ↑ (pos 0)",
+              "type": "failure",
+              "inner": "at Tutorial.Tests.PersonTest.Person_fname() in /Users/kesin/github/csharp-tutorial/tests/Tutorial.Tests/PersonTest.cs:line 23"
+            }
+          },
+          {
+            "name": "Tutorial.Tests.PersonTest.Person_Name",
+            "classname": "Tutorial.Tests.PersonTest",
+            "time": 0.0001106,
+            "file": "/Users/kesin/github/csharp-tutorial/tests/Tutorial.Tests/bin/Debug/netcoreapp3.1/Tutorial.Tests.dll"
+          },
+          {
+            "name": "Tutorial.Tests.PersonTest.Person_lname",
+            "classname": "Tutorial.Tests.PersonTest",
+            "time": 0.0001331,
+            "file": "/Users/kesin/github/csharp-tutorial/tests/Tutorial.Tests/bin/Debug/netcoreapp3.1/Tutorial.Tests.dll"
+          }
+        ]
+      }
+    ]
+  }
+}

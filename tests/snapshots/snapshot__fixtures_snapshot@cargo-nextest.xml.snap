@@ -1,0 +1,134 @@
+---
+source: tests/snapshot.rs
+expression: testsuites
+input_file: tests/fixtures/cargo-nextest.xml
+---
+{
+  "testsuites": {
+    "name": "nextest-run",
+    "time": 0.023,
+    "tests": 18,
+    "failures": 1,
+    "errors": 0,
+    "testsuite": [
+      {
+        "name": "junit2json::serialize",
+        "tests": 8,
+        "failures": 1,
+        "errors": 0,
+        "disabled": 0,
+        "testcase": [
+          {
+            "name": "skipped_testcase",
+            "classname": "junit2json::serialize",
+            "time": 0.007
+          },
+          {
+            "name": "some_testsuite_property_are_empty",
+            "classname": "junit2json::serialize",
+            "time": 0.008,
+            "system-out": [
+              "running 1 test\ntest some_testsuite_property_are_empty ... FAILED\n\nfailures:\n\nfailures:\n    some_testsuite_property_are_empty\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 7 filtered out; finished in 0.00s"
+            ],
+            "system-err": [
+              "thread 'some_testsuite_property_are_empty' panicked at 'assertion failed: `(left == right)`\n\n[1mDiff[0m [31m< left[0m / [32mright >[0m :\n Object {\n     \"testsuites\": Object {\n         \"testsuite\": Array [\n             Object {\n                 \"properties\": Object {\n                     \"property\": Array [\n                         Object {\n[31m<                            \"name\": String(\"hell\"),[0m\n[32m>                            \"name\": String(\"hell[0m[1;48;5;22;32mo[0m[32m\"),[0m\n                             \"value\": String(\"bonjour\"),\n                         },\n                     ],\n                 },\n             },\n         ],\n     },\n }\n\n', tests/serialize.rs:259:5\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+            ],
+            "failure": {
+              "type": "test failure",
+              "inner": "thread 'some_testsuite_property_are_empty' panicked at 'assertion failed: `(left == right)`\n\n[1mDiff[0m [31m< left[0m / [32mright >[0m :\n Object {\n     \"testsuites\": Object {\n         \"testsuite\": Array [\n             Object {\n                 \"properties\": Object {\n                     \"property\": Array [\n                         Object {\n[31m<                            \"name\": String(\"hell\"),[0m\n[32m>                            \"name\": String(\"hell[0m[1;48;5;22;32mo[0m[32m\"),[0m\n                             \"value\": String(\"bonjour\"),\n                         },\n                     ],\n                 },\n             },\n         ],\n     },\n }\n\n', tests/serialize.rs:259:5\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+            }
+          },
+          {
+            "name": "testcase_failure_has_inner",
+            "classname": "junit2json::serialize",
+            "time": 0.007
+          },
+          {
+            "name": "testcase_system_err_has_inner",
+            "classname": "junit2json::serialize",
+            "time": 0.008
+          },
+          {
+            "name": "testcase_system_out_has_inner",
+            "classname": "junit2json::serialize",
+            "time": 0.007
+          },
+          {
+            "name": "testsuite_has_some_fields",
+            "classname": "junit2json::serialize",
+            "time": 0.005
+          },
+          {
+            "name": "testsuite_property_has_some_fields",
+            "classname": "junit2json::serialize",
+            "time": 0.005
+          },
+          {
+            "name": "testsuite_property_is_empty",
+            "classname": "junit2json::serialize",
+            "time": 0.005
+          }
+        ]
+      },
+      {
+        "name": "junit2json::deserialize",
+        "tests": 10,
+        "failures": 0,
+        "errors": 0,
+        "disabled": 0,
+        "testcase": [
+          {
+            "name": "not_junit_xml",
+            "classname": "junit2json::deserialize",
+            "time": 0.005
+          },
+          {
+            "name": "testcase_failure_has_inner",
+            "classname": "junit2json::deserialize",
+            "time": 0.005
+          },
+          {
+            "name": "skipped_testcase",
+            "classname": "junit2json::deserialize",
+            "time": 0.005
+          },
+          {
+            "name": "some_testsuite_property_are_empty",
+            "classname": "junit2json::deserialize",
+            "time": 0.005
+          },
+          {
+            "name": "testcase_system_err_has_inner",
+            "classname": "junit2json::deserialize",
+            "time": 0.007
+          },
+          {
+            "name": "testcase_system_out_has_inner",
+            "classname": "junit2json::deserialize",
+            "time": 0.007
+          },
+          {
+            "name": "testsuite_has_some_fields",
+            "classname": "junit2json::deserialize",
+            "time": 0.006
+          },
+          {
+            "name": "testsuite_property_has_some_fields",
+            "classname": "junit2json::deserialize",
+            "time": 0.006
+          },
+          {
+            "name": "testsuites_properties_are_absent",
+            "classname": "junit2json::deserialize",
+            "time": 0.006
+          },
+          {
+            "name": "testsuite_property_is_empty",
+            "classname": "junit2json::deserialize",
+            "time": 0.009
+          }
+        ]
+      }
+    ]
+  }
+}

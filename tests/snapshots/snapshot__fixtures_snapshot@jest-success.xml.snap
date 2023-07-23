@@ -1,0 +1,120 @@
+---
+source: tests/snapshot.rs
+expression: testsuites
+input_file: tests/fixtures/jest-success.xml
+---
+{
+  "testsuites": {
+    "name": "gcf_junit_xml_to_bq_dummy",
+    "time": 5.82,
+    "tests": 12,
+    "failures": 0,
+    "testsuite": [
+      {
+        "name": "__tests__/gen_dummy_junit/dummy2.test.js",
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "time": 4.189,
+        "skipped": 0,
+        "timestamp": "2020-01-12T16:33:39",
+        "testcase": [
+          {
+            "name": "dummy2 Always success tests should be wait 0-2sec",
+            "classname": "dummy2 Always success tests should be wait 0-2sec",
+            "time": 0.045
+          },
+          {
+            "name": "dummy2 Always success tests should be wait 1-3sec",
+            "classname": "dummy2 Always success tests should be wait 1-3sec",
+            "time": 1.992
+          },
+          {
+            "name": "dummy2 Randomly fail tests should be wait 0-1sec and fail 30%",
+            "classname": "dummy2 Randomly fail tests should be wait 0-1sec and fail 30%",
+            "time": 0.062
+          },
+          {
+            "name": "dummy2 Randomly fail tests should be wait 1-2sec and fail 10%",
+            "classname": "dummy2 Randomly fail tests should be wait 1-2sec and fail 10%",
+            "time": 1.289
+          }
+        ]
+      },
+      {
+        "name": "__tests__/gen_dummy_junit/dummy3.test.js",
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "time": 5.309,
+        "skipped": 0,
+        "timestamp": "2020-01-12T16:33:39",
+        "testcase": [
+          {
+            "name": "dummy3 Always success tests should be wait 0-2sec",
+            "classname": "dummy3 Always success tests should be wait 0-2sec",
+            "time": 1.875
+          },
+          {
+            "name": "dummy3 Always success tests should be wait 1-3sec",
+            "classname": "dummy3 Always success tests should be wait 1-3sec",
+            "time": 1.346
+          },
+          {
+            "name": "dummy3 Randomly fail tests should be wait 0-1sec and fail 30%",
+            "classname": "dummy3 Randomly fail tests should be wait 0-1sec and fail 30%",
+            "time": 0.11
+          },
+          {
+            "name": "dummy3 Randomly fail tests should be wait 1-2sec and fail 20%",
+            "classname": "dummy3 Randomly fail tests should be wait 1-2sec and fail 20%",
+            "time": 1.211
+          }
+        ]
+      },
+      {
+        "name": "__tests__/gen_dummy_junit/dummy1.test.js",
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "time": 5.406,
+        "skipped": 0,
+        "timestamp": "2020-01-12T16:33:39",
+        "properties": {
+          "property": [
+            {
+              "name": "version",
+              "value": "1.774"
+            },
+            {
+              "name": "foo",
+              "value": "1.874"
+            }
+          ]
+        },
+        "testcase": [
+          {
+            "name": "dummy1 Always success tests should be wait 0-2sec",
+            "classname": "dummy1 Always success tests should be wait 0-2sec",
+            "time": 0.494
+          },
+          {
+            "name": "dummy1 Always success tests should be wait 1-3sec",
+            "classname": "dummy1 Always success tests should be wait 1-3sec",
+            "time": 1.466
+          },
+          {
+            "name": "dummy1 Randomly fail tests should be wait 0-1sec and fail 50%",
+            "classname": "dummy1 Randomly fail tests should be wait 0-1sec and fail 50%",
+            "time": 0.73
+          },
+          {
+            "name": "dummy1 Randomly fail tests should be wait 1-2sec and fail 30%",
+            "classname": "dummy1 Randomly fail tests should be wait 1-2sec and fail 30%",
+            "time": 1.952
+          }
+        ]
+      }
+    ]
+  }
+}

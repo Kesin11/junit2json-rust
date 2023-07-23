@@ -1,0 +1,114 @@
+---
+source: tests/snapshot.rs
+expression: testsuites
+input_file: tests/fixtures/jest-failure.xml
+---
+{
+  "testsuites": {
+    "name": "gcf_junit_xml_to_bq_dummy",
+    "time": 8.018,
+    "tests": 12,
+    "failures": 2,
+    "testsuite": [
+      {
+        "name": "__tests__/gen_dummy_junit/dummy1.test.js",
+        "tests": 4,
+        "failures": 1,
+        "errors": 0,
+        "time": 4.772,
+        "skipped": 0,
+        "timestamp": "2020-01-12T16:33:13",
+        "testcase": [
+          {
+            "name": "dummy1 Always success tests should be wait 0-2sec",
+            "classname": "dummy1 Always success tests should be wait 0-2sec",
+            "time": 0.414
+          },
+          {
+            "name": "dummy1 Always success tests should be wait 1-3sec",
+            "classname": "dummy1 Always success tests should be wait 1-3sec",
+            "time": 1.344
+          },
+          {
+            "name": "dummy1 Randomly fail tests should be wait 0-1sec and fail 50%",
+            "classname": "dummy1 Randomly fail tests should be wait 0-1sec and fail 50%",
+            "time": 0.673,
+            "failure": {
+              "inner": "Error: expect(received).toBeGreaterThan(expected)\n\nExpected: > 50\nReceived:   4.897277513425746\n    at Object.it (/Users/kesin/github/gcf_junit_xml_to_bq/__tests__/gen_dummy_junit/dummy1.test.js:22:17)"
+            }
+          },
+          {
+            "name": "dummy1 Randomly fail tests should be wait 1-2sec and fail 30%",
+            "classname": "dummy1 Randomly fail tests should be wait 1-2sec and fail 30%",
+            "time": 1.604
+          }
+        ]
+      },
+      {
+        "name": "__tests__/gen_dummy_junit/dummy3.test.js",
+        "tests": 4,
+        "failures": 1,
+        "errors": 0,
+        "time": 6.372,
+        "skipped": 0,
+        "timestamp": "2020-01-12T16:33:13",
+        "testcase": [
+          {
+            "name": "dummy3 Always success tests should be wait 0-2sec",
+            "classname": "dummy3 Always success tests should be wait 0-2sec",
+            "time": 1.328
+          },
+          {
+            "name": "dummy3 Always success tests should be wait 1-3sec",
+            "classname": "dummy3 Always success tests should be wait 1-3sec",
+            "time": 2.598
+          },
+          {
+            "name": "dummy3 Randomly fail tests should be wait 0-1sec and fail 30%",
+            "classname": "dummy3 Randomly fail tests should be wait 0-1sec and fail 30%",
+            "time": 0.455,
+            "failure": {
+              "inner": "Error: expect(received).toBeGreaterThan(expected)\n\nExpected: > 30\nReceived:   12.15901879426653\n    at Object.it (/Users/kesin/github/gcf_junit_xml_to_bq/__tests__/gen_dummy_junit/dummy3.test.js:22:17)"
+            }
+          },
+          {
+            "name": "dummy3 Randomly fail tests should be wait 1-2sec and fail 20%",
+            "classname": "dummy3 Randomly fail tests should be wait 1-2sec and fail 20%",
+            "time": 1.228
+          }
+        ]
+      },
+      {
+        "name": "__tests__/gen_dummy_junit/dummy2.test.js",
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "time": 7.612,
+        "skipped": 0,
+        "timestamp": "2020-01-12T16:33:13",
+        "testcase": [
+          {
+            "name": "dummy2 Always success tests should be wait 0-2sec",
+            "classname": "dummy2 Always success tests should be wait 0-2sec",
+            "time": 1.937
+          },
+          {
+            "name": "dummy2 Always success tests should be wait 1-3sec",
+            "classname": "dummy2 Always success tests should be wait 1-3sec",
+            "time": 2.904
+          },
+          {
+            "name": "dummy2 Randomly fail tests should be wait 0-1sec and fail 30%",
+            "classname": "dummy2 Randomly fail tests should be wait 0-1sec and fail 30%",
+            "time": 0.105
+          },
+          {
+            "name": "dummy2 Randomly fail tests should be wait 1-2sec and fail 10%",
+            "classname": "dummy2 Randomly fail tests should be wait 1-2sec and fail 10%",
+            "time": 1.948
+          }
+        ]
+      }
+    ]
+  }
+}
