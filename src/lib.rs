@@ -5,6 +5,8 @@ use quick_xml::de;
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 
+pub mod cli;
+
 fn trim_default_items<T: default::Default + PartialEq + Clone>(vec: &mut Option<Vec<T>>) {
     match vec {
         Some(v) => {

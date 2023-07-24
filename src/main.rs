@@ -1,14 +1,15 @@
-use std::env;
 use std::process;
 use std::fs::File;
 use std::io::BufReader;
 use junit2json;
+use junit2json::cli;
+use clap::Parser;
 
 fn main() {
-    let args: Vec<String> = env::args().collect();
+    let args = cli::Args::parse();
 
     println!("{:?}", args);
-    let file = File::open(&args[1]).unwrap_or_else(|msg| {
+    let file = File::open(&args.path).unwrap_or_else(|msg| {
         eprintln!("File::open error: {}", msg);
         process::exit(1);
     });
