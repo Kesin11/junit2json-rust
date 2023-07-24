@@ -22,14 +22,15 @@ fn main() {
 
     // println!("{:#?}", testsuites);
 
-    let json = serde_json::to_string_pretty(&testsuites).unwrap_or_else(|msg| {
-        eprintln!("serde_json::to_string_pretty error: {}", msg);
-        process::exit(1);
-    });
+    let json = match args.pretty {
+        true => serde_json::to_string_pretty(&testsuites).unwrap_or_else(|msg| {
+            eprintln!("serde_json::to_string_pretty error: {}", msg);
+            process::exit(1);
+        }),
+        false => serde_json::to_string(&testsuites).unwrap_or_else(|msg| {
+            eprintln!("serde_json::to_string error: {}", msg);
+            process::exit(1);
+        }),
+    };
     println!("{}", json);
-
-    // file::write(&testsuites, &config).unwrap_or_else(|msg| {
-    //     eprintln!("Write JSON error: {}", msg);
-    //     process::exit(1);
-    // });
 }

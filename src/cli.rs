@@ -8,9 +8,9 @@ pub struct Args {
 
   /// Output pretty JSON
   #[arg(short, long, default_value = "false")]
-  pretty: bool,
+  pub pretty: bool,
 
   /// Filter XML tag names
   #[arg(short, long)]
-  filter_tags: Option<Vec<String>>,
+  pub filter_tags: Option<Vec<String>>,
 }
