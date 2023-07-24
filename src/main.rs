@@ -8,7 +8,7 @@ use clap::Parser;
 fn main() {
     let args = cli::Args::parse();
 
-    println!("{:?}", args);
+    // println!("{:?}", args);
     let file = File::open(&args.path).unwrap_or_else(|msg| {
         eprintln!("File::open error: {}", msg);
         process::exit(1);
@@ -20,7 +20,7 @@ fn main() {
         process::exit(1);
     });
 
-    println!("{:#?}", testsuites);
+    // println!("{:#?}", testsuites);
 
     let json = serde_json::to_string_pretty(&testsuites).unwrap_or_else(|msg| {
         eprintln!("serde_json::to_string_pretty error: {}", msg);
