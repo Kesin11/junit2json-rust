@@ -14,14 +14,20 @@ fn main() {
         process::exit(1);
     });
     let reader = BufReader::new(file);
-
-    let testsuites = junit2json::from_reader(reader).unwrap_or_else(|msg| {
+    let mut testsuites = junit2json::from_reader(reader).unwrap_or_else(|msg| {
         eprintln!("junit2json::from_reader error: {}", msg);
         process::exit(1);
     });
-
     // println!("{:#?}", testsuites);
 
+    // Filter tags
+    if let Some(tags) = args.filter_tags {
+        if !tags.is_empty() {
+            testsuites.filter_tags(&tags);
+        }
+    }
+
+    // Convert to JSON string
     let json = match args.pretty {
         true => serde_json::to_string_pretty(&testsuites).unwrap_or_else(|msg| {
             eprintln!("serde_json::to_string_pretty error: {}", msg);
@@ -32,5 +38,6 @@ fn main() {
             process::exit(1);
         }),
     };
+
     println!("{}", json);
 }

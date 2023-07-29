@@ -27,6 +27,18 @@ pub enum TestSuitesOrTestSuite {
     TestSuites(TestSuites),
     TestSuite(TestSuite),
 }
+impl TestSuitesOrTestSuite {
+    pub fn filter_tags(&mut self, tags: &Vec<String>) {
+        match self {
+            TestSuitesOrTestSuite::TestSuites(ref mut testsuites) => {
+                testsuites.filter_tags(tags);
+            },
+            TestSuitesOrTestSuite::TestSuite(ref mut testsuite) => {
+                testsuite.filter_tags(tags);
+            },
+        }
+    }
+}
 
 // Reference JUnit XML Schema:
 // - https://llg.cubic.org/docs/junit/
@@ -52,6 +64,14 @@ impl TestSuites {
         match &mut self.testsuite {
             Some(testsuite) => {
                 testsuite.into_iter().for_each(|item| item.trim_empty_items())
+            }
+            None => {},
+        }
+    }
+    pub fn filter_tags(&mut self, tags: &Vec<String>) {
+        match &mut self.testsuite {
+            Some(testsuite) => {
+                testsuite.into_iter().for_each(|item| item.filter_tags(tags))
             }
             None => {},
         }
@@ -120,6 +140,15 @@ impl TestSuite {
             None => {},
         }
     }
+    pub fn filter_tags(&mut self, tags: &Vec<String>) {
+        for tag in tags.iter() {
+            match tag.as_str() {
+                "system-out" => self.system_out = None,
+                "system-err" => self.system_err = None,
+                _ => {},
+            }
+        }
+    }
 }
 
 #[skip_serializing_none]
@@ -152,6 +181,15 @@ impl TestCase {
     pub fn trim_empty_items(&mut self) {
         trim_default_items(&mut self.system_out);
         trim_default_items(&mut self.system_err);
+    }
+    pub fn filter_tags(&mut self, tags: &Vec<String>) {
+        for tag in tags.iter() {
+            match tag.as_str() {
+                "system-out" => self.system_out = None,
+                "system-err" => self.system_err = None,
+                _ => {},
+            }
+        }
     }
 }
 
