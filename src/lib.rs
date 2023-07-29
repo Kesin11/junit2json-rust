@@ -148,6 +148,12 @@ impl TestSuite {
                 PossibleFilterTags::SystemErr => self.system_err = None,
             }
         }
+        match &mut self.testcase {
+            Some(testcase) => {
+                testcase.into_iter().for_each(|item| item.filter_tags(tags))
+            }
+            None => {},
+        }
     }
 }
 
@@ -182,12 +188,11 @@ impl TestCase {
         trim_default_items(&mut self.system_out);
         trim_default_items(&mut self.system_err);
     }
-    pub fn filter_tags(&mut self, tags: &Vec<String>) {
+    pub fn filter_tags(&mut self, tags: &Vec<PossibleFilterTags>) {
         for tag in tags.iter() {
-            match tag.as_str() {
-                "system-out" => self.system_out = None,
-                "system-err" => self.system_err = None,
-                _ => {},
+            match tag {
+                PossibleFilterTags::SystemOut => self.system_out = None,
+                PossibleFilterTags::SystemErr => self.system_err = None,
             }
         }
     }
