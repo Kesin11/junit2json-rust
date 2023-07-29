@@ -1,5 +1,6 @@
 use std::default;
 use std::io;
+use cli::PossibleFilterTags;
 use quick_xml;
 use quick_xml::de;
 use serde::{Deserialize, Serialize};
@@ -28,7 +29,7 @@ pub enum TestSuitesOrTestSuite {
     TestSuite(TestSuite),
 }
 impl TestSuitesOrTestSuite {
-    pub fn filter_tags(&mut self, tags: &Vec<String>) {
+    pub fn filter_tags(&mut self, tags: &Vec<PossibleFilterTags>) {
         match self {
             TestSuitesOrTestSuite::TestSuites(ref mut testsuites) => {
                 testsuites.filter_tags(tags);
@@ -68,7 +69,7 @@ impl TestSuites {
             None => {},
         }
     }
-    pub fn filter_tags(&mut self, tags: &Vec<String>) {
+    pub fn filter_tags(&mut self, tags: &Vec<PossibleFilterTags>) {
         match &mut self.testsuite {
             Some(testsuite) => {
                 testsuite.into_iter().for_each(|item| item.filter_tags(tags))
@@ -140,12 +141,11 @@ impl TestSuite {
             None => {},
         }
     }
-    pub fn filter_tags(&mut self, tags: &Vec<String>) {
+    pub fn filter_tags(&mut self, tags: &Vec<PossibleFilterTags>) {
         for tag in tags.iter() {
-            match tag.as_str() {
-                "system-out" => self.system_out = None,
-                "system-err" => self.system_err = None,
-                _ => {},
+            match tag {
+                PossibleFilterTags::SystemOut => self.system_out = None,
+                PossibleFilterTags::SystemErr => self.system_err = None,
             }
         }
     }

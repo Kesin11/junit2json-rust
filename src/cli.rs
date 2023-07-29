@@ -1,4 +1,10 @@
-use clap::Parser;
+use clap::{Parser, ValueEnum};
+
+#[derive (Clone, ValueEnum, Debug)]
+pub enum PossibleFilterTags {
+  SystemOut,
+  SystemErr,
+}
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
@@ -11,6 +17,6 @@ pub struct Args {
   pub pretty: bool,
 
   /// Filter XML tag names
-  #[arg(short, long)]
-  pub filter_tags: Option<Vec<String>>,
+  #[arg(short, long, value_enum)]
+  pub filter_tags: Option<Vec<PossibleFilterTags>>,
 }
