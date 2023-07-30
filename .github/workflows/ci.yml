@@ -30,4 +30,4 @@ jobs:
     - uses: actions/upload-artifact@v3
       with:
         name: junit test reports
-        path: target/nextest/defualt
+        path: target/nextest/default
