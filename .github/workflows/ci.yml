@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Show versions
+      run: |
+        rustc --version
+        cargo --version
+    - uses: actions/checkout@v3
+    - name: Setup nextest
+      run: |
+        curl -LsSf https://get.nexte.st/latest/linux | tar zxf - -C ${CARGO_HOME:-~/.cargo}/bin
+
+    - name: test
+      run: |
+        cargo nextest run
+
+    - uses: actions/upload-artifact@v3
+      with:
+        name: junit test reports
+        path: target/nextest/default
+
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Show versions
+      run: |
+        rustc --version
+        cargo --version
+    - uses: actions/checkout@v3
+
+    - name: Buid
+      run: cargo build --release
