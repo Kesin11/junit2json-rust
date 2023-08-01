@@ -5,8 +5,8 @@ edition = "2021"
 authors = ["Kenta Kase <kesin1202000@gmail.com>"]
 license = "MIT"
 description = "A tool convert JUnit XML format to JSON with Rust"
-repository = "https://github.com/Kesin11/junit2json-rust"
-homepage = "https://github.com/Kesin11/junit2json-rust"
+repository = "https://github.com/Kesin11/junit2json-rs"
+homepage = "https://github.com/Kesin11/junit2json-rs"
 keywords = ["junit"]
 categories = ["development-tools::testing"]
 
