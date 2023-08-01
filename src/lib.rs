@@ -1,3 +1,140 @@
+//! # junit2json-rs
+//! 
+//! junit2json-rs is a tool to convert JUnit XML format to JSON.
+//! From a library perspective, it provides a function to serialize Junit XML to Struct.
+//! 
+//! junit2json-rs is a reimplementation of [ts-junit2json](https://github.com/Kesin11/ts-junit2json) that is my previous work in TypeScript.
+//! 
+//! # Porpose
+//! junit2json-rs is designed for uploading test result data to BigQuery or any other DB that supports JSON.
+//! 
+//! Many languages and test frameworks support to output test result data as JUnit XML format, which is de fact standard in today.
+//! On the other hand, most DBs do not support to import XML but support JSON.
+//! 
+//! For this purpose, junit2json-rs provides a simple JUnit XML to JSON converter.
+//! 
+//! # Install
+//! ```
+//! cargo install junit2json-rs
+//! ```
+//! 
+//! # Usage
+//! ```
+//! junit2json-rs --pretry <junit_xml_file>
+//! ```
+//! 
+//! # Output example
+//! ```json
+//! {
+//!   "testsuites": {
+//!     "name": "gcf_junit_xml_to_bq_dummy",
+//!     "time": 8.018,
+//!     "tests": 12,
+//!     "failures": 2,
+//!     "testsuite": [
+//!       {
+//!         "name": "__tests__/gen_dummy_junit/dummy1.test.js",
+//!         "tests": 4,
+//!         "failures": 1,
+//!         "errors": 0,
+//!         "time": 4.772,
+//!         "skipped": 0,
+//!         "timestamp": "2020-01-12T16:33:13",
+//!         "testcase": [
+//!           {
+//!             "name": "dummy1 Always success tests should be wait 0-2sec",
+//!             "classname": "dummy1 Always success tests should be wait 0-2sec",
+//!             "time": 0.414
+//!           },
+//!           {
+//!             "name": "dummy1 Always success tests should be wait 1-3sec",
+//!             "classname": "dummy1 Always success tests should be wait 1-3sec",
+//!             "time": 1.344
+//!           },
+//!           {
+//!             "name": "dummy1 Randomly fail tests should be wait 0-1sec and fail 50%",
+//!             "classname": "dummy1 Randomly fail tests should be wait 0-1sec and fail 50%",
+//!             "time": 0.673,
+//!             "failure": {
+//!               "inner": "Error: expect(received).toBeGreaterThan(expected)\n\nExpected: > 50\nReceived:   4.897277513425746\n    at Object.it (/Users/kesin/github/gcf_junit_xml_to_bq/__tests__/gen_dummy_junit/dummy1.test.js:22:17)"
+//!             }
+//!           },
+//!           {
+//!             "name": "dummy1 Randomly fail tests should be wait 1-2sec and fail 30%",
+//!             "classname": "dummy1 Randomly fail tests should be wait 1-2sec and fail 30%",
+//!             "time": 1.604
+//!           }
+//!         ]
+//!       },
+//!       {
+//!         "name": "__tests__/gen_dummy_junit/dummy3.test.js",
+//!         "tests": 4,
+//!         "failures": 1,
+//!         "errors": 0,
+//!         "time": 6.372,
+//!         "skipped": 0,
+//!         "timestamp": "2020-01-12T16:33:13",
+//!         "testcase": [
+//!           {
+//!             "name": "dummy3 Always success tests should be wait 0-2sec",
+//!             "classname": "dummy3 Always success tests should be wait 0-2sec",
+//!             "time": 1.328
+//!           },
+//!           {
+//!             "name": "dummy3 Always success tests should be wait 1-3sec",
+//!             "classname": "dummy3 Always success tests should be wait 1-3sec",
+//!             "time": 2.598
+//!           },
+//!           {
+//!             "name": "dummy3 Randomly fail tests should be wait 0-1sec and fail 30%",
+//!             "classname": "dummy3 Randomly fail tests should be wait 0-1sec and fail 30%",
+//!             "time": 0.455,
+//!             "failure": {
+//!               "inner": "Error: expect(received).toBeGreaterThan(expected)\n\nExpected: > 30\nReceived:   12.15901879426653\n    at Object.it (/Users/kesin/github/gcf_junit_xml_to_bq/__tests__/gen_dummy_junit/dummy3.test.js:22:17)"
+//!             }
+//!           },
+//!           {
+//!             "name": "dummy3 Randomly fail tests should be wait 1-2sec and fail 20%",
+//!             "classname": "dummy3 Randomly fail tests should be wait 1-2sec and fail 20%",
+//!             "time": 1.228
+//!           }
+//!         ]
+//!       }
+//!     ]
+//!   }
+//! }
+//! ```
+//! 
+//! # With `jq` examples
+//! Count testcases
+//! 
+//! ```bash
+//! junit2json-rs --pretry <junit_xml_file> | jq .testsuites.tests
+//! ```
+//! 
+//! Show testsuite names
+//! 
+//! ```
+//! 
+//! Show testcase classnames
+//! 
+//! ```bash
+//! npx junit2json junit.xml | jq .testsuites.testsuite[].testcase[].classname
+//! ```
+//! 
+//! # Notice
+//! junit2json-rs has some major changes from ts-junit2json.
+//! Most of the changes are to compliant with the JUnit XML Schema.
+//! 
+//! - A `testsuites` or `testsuite` key appears in the root of JSON.
+//! - `properties` has `property` array. ts-junit2json has `property` array of object directly.
+//! - `skipped`, `error`, `failure` are object, not array of object.
+//! - If XML has undefined tag, it will be ignored. ts-junit2json will be converted to JSON if possible.
+//! 
+//! Referenced JUnit XML Schema:
+//! - <https://llg.cubic.org/docs/junit/>
+//! - <https://github.com/testmoapp/junitxml/tree/main>
+
 use std::default;
 use std::io;
 use cli::PossibleFilterTags;
@@ -22,6 +159,19 @@ fn trim_default_items<T: default::Default + PartialEq + Clone>(vec: &mut Option<
     }
 }
 
+/// It corresponds to `<testsuites> or <testsuite>`
+///
+/// ```xml
+/// <testsuites name="testsuites1" tests=1 time=0.1>
+///     <tetssuite>
+///     </testsuite>
+/// </testsuites>
+/// ```
+/// 
+/// ```xml
+/// <testsuite name="testsuite1" tests=1 time=0.1>
+/// </testsuite>
+/// ```
 #[derive(Serialize, Deserialize, Debug, PartialEq)]
 #[serde(rename_all = "lowercase")]
 pub enum TestSuitesOrTestSuite {
@@ -29,6 +179,32 @@ pub enum TestSuitesOrTestSuite {
     TestSuite(TestSuite),
 }
 impl TestSuitesOrTestSuite {
+    /// Remove all `system-out` and `system-err` from each `testsuite` and `testcase`.
+    /// 
+    /// # Examples
+    /// ```
+    /// use junit2json;
+    /// 
+    /// let xml = r#"
+    ///   <?xml version="1.0" encoding="UTF-8"?>
+    ///   <testsuites>
+    ///       <testsuite name="suite1">
+    ///           <system-out>system out text</system-out>
+    ///           <system-err>system error text</system-err>
+    ///           <testcase name="case1">
+    ///             <system-out>system out text</system-out>
+    ///             <system-err>system error text</system-err>
+    ///           </testcase>
+    ///       </testsuite>
+    ///   </testsuites>
+    /// "#;
+    /// let mut testsuites = junit2json::from_str(xml).unwrap();
+    /// testsuites.filter_tags(&vec![
+    ///   junit2json::cli::PossibleFilterTags::SystemOut,
+    ///   junit2json::cli::PossibleFilterTags::SystemErr,
+    /// ]);
+    /// println!("{:#?}", testsuites);
+    /// ```
     pub fn filter_tags(&mut self, tags: &Vec<PossibleFilterTags>) {
         match self {
             TestSuitesOrTestSuite::TestSuites(ref mut testsuites) => {
@@ -41,9 +217,12 @@ impl TestSuitesOrTestSuite {
     }
 }
 
-// Reference JUnit XML Schema:
-// - https://llg.cubic.org/docs/junit/
-// - https://github.com/testmoapp/junitxml/tree/main
+/// It corresponds to `<testsuites>`
+///
+/// ```xml
+/// <testsuites name="testsuites1" tests=1 time=0.1>
+/// </testsuites>
+/// ```
 #[skip_serializing_none]
 #[derive(Serialize, Deserialize, Debug, Default, PartialEq)]
 pub struct TestSuites {
@@ -79,6 +258,12 @@ impl TestSuites {
     }
 }
 
+/// It corresponds to `<testsuite>`
+///
+/// ```xml
+/// <testsuite name="testsuite1" tests=1 time=0.1>
+/// </testsuite>
+/// ```
 #[skip_serializing_none]
 #[derive(Serialize, Deserialize, Debug, Default, PartialEq)]
 pub struct TestSuite {
@@ -157,6 +342,12 @@ impl TestSuite {
     }
 }
 
+/// It corresponds to `<testcase>`
+///
+/// ```xml
+/// <testcase name="testcase1" time=0.1>
+/// </testcase>
+/// ```
 #[skip_serializing_none]
 #[derive(Serialize, Deserialize, Debug, Default, PartialEq)]
 pub struct TestCase {
@@ -198,6 +389,15 @@ impl TestCase {
     }
 }
 
+/// It corresponds to `<skipped>, <error>, <failure>`
+///
+/// ```xml
+/// <testcase>
+///    <skipped message="foo" type="bar">Skipped</skipped>
+///    <error message="foo" type="bar">Error</error>
+///    <failure message="foo" type="bar">Failure</failure>
+/// </testcase>
+/// ```
 #[skip_serializing_none]
 #[derive(Serialize, Deserialize, Debug, Default, PartialEq)]
 pub struct Detail {
@@ -209,6 +409,13 @@ pub struct Detail {
     pub inner: Option<String>,
 }
 
+/// It corresponds to `<properties>`
+///
+/// ```xml
+/// <properties>
+///    <property name="foo" value="bar" />
+/// </properties>
+/// ```
 #[skip_serializing_none]
 #[derive(Serialize, Deserialize, Debug, Default, PartialEq)]
 pub struct Properties {
@@ -220,6 +427,11 @@ impl Properties {
     }
 }
 
+/// It corresponds to `<property>`
+/// 
+/// ```xml
+/// <property name="foo" value="bar" />
+/// ```
 #[skip_serializing_none]
 #[derive(Serialize, Deserialize, Debug, Default, PartialEq, Clone)]
 pub struct Property {
@@ -229,6 +441,27 @@ pub struct Property {
     pub value: Option<String>,
 }
 
+/// Deserialize JUnit XML from a reader.
+/// 
+/// # Examples
+/// ```
+/// use junit2json;
+/// use std::process;
+/// use std::fs::File;
+/// use std::io::BufReader;
+/// 
+/// let path = "tests/fixtures/cargo-nextest.xml";
+/// let file = File::open(path).unwrap_or_else(|msg| {
+///     eprintln!("File::open error: {}", msg);
+///     process::exit(1);
+/// });
+/// let reader = BufReader::new(file);
+/// let testsuites = junit2json::from_reader(reader).unwrap_or_else(|msg| {
+///     eprintln!("junit2json::from_reader error: {}", msg);
+///     process::exit(1);
+/// });
+/// println!("{:#?}", testsuites);
+/// ```
 pub fn from_reader<T>(reader: io::BufReader<T>) -> Result<TestSuitesOrTestSuite, quick_xml::DeError>
     where T: io::Read
     {
@@ -240,6 +473,26 @@ pub fn from_reader<T>(reader: io::BufReader<T>) -> Result<TestSuitesOrTestSuite,
     Ok(root)
 }
 
+/// Deserialize JUnit XML from a string.
+/// 
+/// # Examples
+/// ```
+/// use junit2json;
+/// use std::process;
+/// 
+/// let xml = r#"
+///     <?xml version="1.0" encoding="UTF-8"?>
+///     <testsuites>
+///         <testsuite failures="1" tests="2">
+///         </testsuite>
+///     </testsuites>
+/// "#;
+/// let testsuites = junit2json::from_str(xml).unwrap_or_else(|msg| {
+///     eprintln!("junit2json::from_str error: {}", msg);
+///     process::exit(1);
+/// });
+/// println!("{:#?}", testsuites);
+/// ```
 pub fn from_str(s: &str) -> Result<TestSuitesOrTestSuite, quick_xml::DeError> {
     from_reader(io::BufReader::new(s.as_bytes()))
 }
