@@ -5,7 +5,7 @@
 //! 
 //! junit2json-rs is a reimplementation of [ts-junit2json](https://github.com/Kesin11/ts-junit2json) that is my previous work in TypeScript.
 //! 
-//! # Porpose
+//! # Purpose
 //! junit2json-rs is designed for uploading test result data to BigQuery or any other DB that supports JSON.
 //! 
 //! Many languages and test frameworks support to output test result data as JUnit XML format, which is de fact standard in today.
@@ -106,19 +106,21 @@
 //! ```
 //! 
 //! # With `jq` examples
-//! Count testcases
+//! Show testsuites test count
 //! 
-//! ```bash
+//! ```
 //! junit2json-rs --pretry <junit_xml_file> | jq .testsuites.tests
 //! ```
 //! 
 //! Show testsuite names
 //! 
 //! ```
+//! junit2json-rs --pretry <junit_xml_file> | jq .testsuites.testsuite[].name
+//! ```
 //! 
 //! Show testcase classnames
 //! 
-//! ```bash
+//! ```
 //! npx junit2json junit.xml | jq .testsuites.testsuite[].testcase[].classname
 //! ```
 //! 
