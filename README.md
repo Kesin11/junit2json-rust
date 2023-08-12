@@ -15,12 +15,12 @@ On the other hand, most DBs do not support to import XML but support JSON.
 For this purpose, junit2json-rs provides a simple JUnit XML to JSON converter.
 
 # Install
-```
-cargo install junit2json-rs
+```shell
+cargo install --git https://github.com/Kesin11/junit2json-rs
 ```
 
 # Usage
-```
+```shell
 junit2json-rs --pretry <junit_xml_file>
 ```
 
