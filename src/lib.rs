@@ -15,7 +15,7 @@
 //! 
 //! # Install
 //! ```
-//! cargo install junit2json-rs
+//! cargo install --git https://github.com/Kesin11/junit2json-rs
 //! ```
 //! 
 //! # Usage
