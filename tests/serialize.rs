@@ -3,34 +3,34 @@ use pretty_assertions::assert_eq;
 use serde_json::json;
 
 #[test]
-  // Test when testsuites.testsuite has some fields
-fn testsuite_has_some_fields () {
-  let xml = r#"
+// Test when testsuites.testsuite has some fields
+fn testsuite_has_some_fields() {
+    let xml = r#"
       <?xml version="1.0" encoding="UTF-8"?>
       <testsuites>
           <testsuite failures="1" tests="2">
           </testsuite>
       </testsuites>
   "#;
-  let expect = json!({
-      "testsuites": {
-          "testsuite": [
-              {
-                  "failures": 1,
-                  "tests": 2
-              }
-          ]
-      }
-  });
+    let expect = json!({
+        "testsuites": {
+            "testsuite": [
+                {
+                    "failures": 1,
+                    "tests": 2
+                }
+            ]
+        }
+    });
 
-  let actual = junit2json::from_str(xml).unwrap();
-  let actual_json_value = serde_json::to_value(actual).unwrap();
-  assert_eq!(actual_json_value, expect);
+    let actual = junit2json::from_str(xml).unwrap();
+    let actual_json_value = serde_json::to_value(actual).unwrap();
+    assert_eq!(actual_json_value, expect);
 }
 
-  #[test]
-  // Test when testcase.failure has inner text
-  fn testcase_failure_has_inner() {
+#[test]
+// Test when testcase.failure has inner text
+fn testcase_failure_has_inner() {
     let xml = r#"
         <?xml version="1.0" encoding="UTF-8"?>
         <testsuites>
@@ -61,11 +61,11 @@ fn testsuite_has_some_fields () {
     let actual = junit2json::from_str(xml).unwrap();
     let actual_json_value = serde_json::to_value(actual).unwrap();
     assert_eq!(actual_json_value, expect);
-  }
+}
 
-  #[test]
-  // Test when testcase has skiped test
-  fn skipped_testcase() {
+#[test]
+// Test when testcase has skiped test
+fn skipped_testcase() {
     let xml = r#"
         <?xml version="1.0" encoding="UTF-8"?>
         <testsuites>
@@ -97,11 +97,11 @@ fn testsuite_has_some_fields () {
     let actual = junit2json::from_str(xml).unwrap();
     let actual_json_value = serde_json::to_value(actual).unwrap();
     assert_eq!(actual_json_value, expect);
-  }
+}
 
-  #[test]
-  // Test when testcase.system-out has inner text
-  fn testcase_system_out_has_inner() {
+#[test]
+// Test when testcase.system-out has inner text
+fn testcase_system_out_has_inner() {
     let xml = r#"
         <?xml version="1.0" encoding="UTF-8"?>
         <testsuites>
@@ -113,26 +113,26 @@ fn testsuite_has_some_fields () {
         </testsuites>
     "#;
     let expect = json!({
-      "testsuites": {
-          "testsuite": [
-              {
-                  "testcase": [
-                      {
-                          "system-out": ["system out text"]
-                      }
-                  ]
-              }
-          ]
-      }});
+    "testsuites": {
+        "testsuite": [
+            {
+                "testcase": [
+                    {
+                        "system-out": ["system out text"]
+                    }
+                ]
+            }
+        ]
+    }});
 
     let actual = junit2json::from_str(xml).unwrap();
     let actual_json_value = serde_json::to_value(actual).unwrap();
     assert_eq!(actual_json_value, expect);
-  }
+}
 
-  #[test]
-  // Test when testcase.system-err has inner text
-  fn testcase_system_err_has_inner() {
+#[test]
+// Test when testcase.system-err has inner text
+fn testcase_system_err_has_inner() {
     let xml = r#"
         <?xml version="1.0" encoding="UTF-8"?>
         <testsuites>
@@ -144,26 +144,26 @@ fn testsuite_has_some_fields () {
         </testsuites>
     "#;
     let expect = json!({
-      "testsuites": {
-          "testsuite": [
-              {
-                  "testcase": [
-                      {
-                          "system-err": ["system error text"]
-                      }
-                  ]
-              }
-          ]
-      }});
-    
+    "testsuites": {
+        "testsuite": [
+            {
+                "testcase": [
+                    {
+                        "system-err": ["system error text"]
+                    }
+                ]
+            }
+        ]
+    }});
+
     let actual = junit2json::from_str(xml).unwrap();
     let actual_json_value = serde_json::to_value(actual).unwrap();
     assert_eq!(actual_json_value, expect);
-  }
+}
 
-  #[test]
-  // Test when testsuite.property is empty
-  fn testsuite_property_is_empty() {
+#[test]
+// Test when testsuite.property is empty
+fn testsuite_property_is_empty() {
     let xml = r#"
         <?xml version="1.0" encoding="UTF-8"?>
         <testsuites>
@@ -173,20 +173,20 @@ fn testsuite_has_some_fields () {
         </testsuites>
     "#;
     let expect = json!({
-      "testsuites": {
-          "testsuite": [
-              {}
-          ]
-      }});
+    "testsuites": {
+        "testsuite": [
+            {}
+        ]
+    }});
 
     let actual = junit2json::from_str(xml).unwrap();
     let actual_json_value = serde_json::to_value(actual).unwrap();
     assert_eq!(actual_json_value, expect);
-  }
+}
 
-  #[test]
-  // Test when testsuite.property has some fields
-  fn testsuite_property_has_some_fields() {
+#[test]
+// Test when testsuite.property has some fields
+fn testsuite_property_has_some_fields() {
     let xml = r#"
         <?xml version="1.0" encoding="UTF-8"?>
         <testsuites>
@@ -199,34 +199,34 @@ fn testsuite_has_some_fields () {
         </testsuites>
     "#;
     let expect = json!({
-      "testsuites": {
-          "testsuite": [
-              {
-                "properties": {
-                  "property": [
-                    {
-                        "name": "hello",
-                        "value": "bonjour"
-                    },
-                    {
-                        "name": "world",
-                        "value": "monde"
-                    }
-                  ]
-                }
+    "testsuites": {
+        "testsuite": [
+            {
+              "properties": {
+                "property": [
+                  {
+                      "name": "hello",
+                      "value": "bonjour"
+                  },
+                  {
+                      "name": "world",
+                      "value": "monde"
+                  }
+                ]
               }
-          ]
-      }});
-    
+            }
+        ]
+    }});
+
     let actual = junit2json::from_str(xml).unwrap();
     let actual_json_value = serde_json::to_value(actual).unwrap();
     assert_eq!(actual_json_value, expect);
-  }
+}
 
-  #[test]
-  // Test when some testsuite.property are empty
-  fn some_testsuite_property_are_empty() {
-      let xml = r#"
+#[test]
+// Test when some testsuite.property are empty
+fn some_testsuite_property_are_empty() {
+    let xml = r#"
           <?xml version="1.0" encoding="UTF-8"?>
           <testsuites>
               <testsuite>
@@ -239,22 +239,22 @@ fn testsuite_has_some_fields () {
       "#;
 
     let expect = json!({
-      "testsuites": {
-          "testsuite": [
-              {
-                "properties": {
-                  "property": [
-                    {
-                        "name": "hello",
-                        "value": "bonjour"
-                    },
-                  ]
-                }
+    "testsuites": {
+        "testsuite": [
+            {
+              "properties": {
+                "property": [
+                  {
+                      "name": "hello",
+                      "value": "bonjour"
+                  },
+                ]
               }
-          ]
-      }});
+            }
+        ]
+    }});
 
     let actual = junit2json::from_str(xml).unwrap();
     let actual_json_value = serde_json::to_value(actual).unwrap();
     assert_eq!(actual_json_value, expect);
-  }
+}

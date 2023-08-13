@@ -1,9 +1,9 @@
-use std::process;
-use std::fs::File;
-use std::io::BufReader;
+use clap::Parser;
 use junit2json;
 use junit2json::cli;
-use clap::Parser;
+use std::fs::File;
+use std::io::BufReader;
+use std::process;
 
 fn main() {
     let args = cli::Args::parse();
