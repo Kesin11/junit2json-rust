@@ -40,5 +40,7 @@ jobs:
         cargo --version
     - uses: actions/checkout@v3
 
+    - name: Format check
+      run: cargo fmt --check --message-format=short
     - name: Buid
       run: cargo build --release
