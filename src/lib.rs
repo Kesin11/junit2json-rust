@@ -177,7 +177,7 @@ fn trim_default_items<T: default::Default + PartialEq + Clone>(vec: &mut Option<
 #[serde(rename_all = "lowercase")]
 pub enum TestSuitesOrTestSuite {
     TestSuites(TestSuites),
-    TestSuite(TestSuite),
+    TestSuite(Box<TestSuite>),
 }
 impl TestSuitesOrTestSuite {
     /// Remove all `system-out` and `system-err` from each `testsuite` and `testcase`.
@@ -206,7 +206,7 @@ impl TestSuitesOrTestSuite {
     /// ]);
     /// println!("{:#?}", testsuites);
     /// ```
-    pub fn filter_tags(&mut self, tags: &Vec<PossibleFilterTags>) {
+    pub fn filter_tags(&mut self, tags: &[PossibleFilterTags]) {
         match self {
             TestSuitesOrTestSuite::TestSuites(ref mut testsuites) => {
                 testsuites.filter_tags(tags);
@@ -249,7 +249,7 @@ impl TestSuites {
             None => {}
         }
     }
-    pub fn filter_tags(&mut self, tags: &Vec<PossibleFilterTags>) {
+    pub fn filter_tags(&mut self, tags: &[PossibleFilterTags]) {
         match &mut self.testsuite {
             Some(testsuite) => testsuite.iter_mut().for_each(|item| item.filter_tags(tags)),
             None => {}
@@ -323,7 +323,7 @@ impl TestSuite {
             None => {}
         }
     }
-    pub fn filter_tags(&mut self, tags: &Vec<PossibleFilterTags>) {
+    pub fn filter_tags(&mut self, tags: &[PossibleFilterTags]) {
         for tag in tags.iter() {
             match tag {
                 PossibleFilterTags::SystemOut => self.system_out = None,
@@ -374,7 +374,7 @@ impl TestCase {
         trim_default_items(&mut self.system_out);
         trim_default_items(&mut self.system_err);
     }
-    pub fn filter_tags(&mut self, tags: &Vec<PossibleFilterTags>) {
+    pub fn filter_tags(&mut self, tags: &[PossibleFilterTags]) {
         for tag in tags.iter() {
             match tag {
                 PossibleFilterTags::SystemOut => self.system_out = None,
