@@ -1,5 +1,5 @@
 # junit2json-rs
-[![CI](https://github.com/Kesin11/junit2json-rs/actions/workflows/ci.yml/badge.svg)](https://github.com/Kesin11/junit2json-rs/actions/workflows/ci.yml)
+[![CI](https://github.com/Kesin11/junit2json-rs/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Kesin11/junit2json-rs/actions/workflows/ci.yml)
 
 junit2json-rs is a tool to convert JUnit XML format to JSON.
 From a library perspective, it provides a function to serialize Junit XML to Struct.

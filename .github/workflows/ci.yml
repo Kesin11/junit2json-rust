@@ -12,27 +12,42 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    # Setup
     - name: Show versions
       run: |
         rustc --version
         cargo --version
     - uses: actions/checkout@v3
+
+    # Execute
+    - name: Format check
+      id: format
+      continue-on-error: true
+      run: cargo fmt --check --message-format=short
+    - name: Lint
+      id: lint
+      continue-on-error: true
+      run: cargo clippy
+
     - name: Setup nextest
       run: |
         curl -LsSf https://get.nexte.st/latest/linux | tar zxf - -C ${CARGO_HOME:-~/.cargo}/bin
-
     - name: test
       run: |
         cargo nextest run
-
     - uses: actions/upload-artifact@v3
+      if: always()
       with:
         name: junit test reports
         path: target/nextest/default
 
+    # Post process
+    - name: Set status failure when format or lint step failed
+      if: steps.format.outcome != 'success' || steps.lint.outcome != 'success'
+      run: exit 1
+
   build:
     runs-on: ubuntu-latest
-
     steps:
     - name: Show versions
       run: |
@@ -40,5 +55,5 @@ jobs:
         cargo --version
     - uses: actions/checkout@v3
 
-    - name: Buid
+    - name: Build
       run: cargo build --release

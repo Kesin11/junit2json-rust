@@ -1,28 +1,28 @@
 //! # junit2json-rs
-//! 
+//!
 //! junit2json-rs is a tool to convert JUnit XML format to JSON.
 //! From a library perspective, it provides a function to serialize Junit XML to Struct.
-//! 
+//!
 //! junit2json-rs is a reimplementation of [ts-junit2json](https://github.com/Kesin11/ts-junit2json) that is my previous work in TypeScript.
-//! 
+//!
 //! # Purpose
 //! junit2json-rs is designed for uploading test result data to BigQuery or any other DB that supports JSON.
-//! 
+//!
 //! Many languages and test frameworks support to output test result data as JUnit XML format, which is de fact standard in today.
 //! On the other hand, most DBs do not support to import XML but support JSON.
-//! 
+//!
 //! For this purpose, junit2json-rs provides a simple JUnit XML to JSON converter.
-//! 
+//!
 //! # Install
 //! ```
 //! cargo install --git https://github.com/Kesin11/junit2json-rs
 //! ```
-//! 
+//!
 //! # Usage
 //! ```
 //! junit2json-rs --pretry <junit_xml_file>
 //! ```
-//! 
+//!
 //! # Output example
 //! ```json
 //! {
@@ -104,46 +104,45 @@
 //!   }
 //! }
 //! ```
-//! 
+//!
 //! # With `jq` examples
 //! Show testsuites test count
-//! 
+//!
 //! ```
 //! junit2json-rs --pretry <junit_xml_file> | jq .testsuites.tests
 //! ```
-//! 
+//!
 //! Show testsuite names
-//! 
+//!
 //! ```
 //! junit2json-rs --pretry <junit_xml_file> | jq .testsuites.testsuite[].name
 //! ```
-//! 
+//!
 //! Show testcase classnames
-//! 
+//!
 //! ```
 //! npx junit2json junit.xml | jq .testsuites.testsuite[].testcase[].classname
 //! ```
-//! 
+//!
 //! # Notice
 //! junit2json-rs has some major changes from ts-junit2json.
 //! Most of the changes are to compliant with the JUnit XML Schema.
-//! 
+//!
 //! - A `testsuites` or `testsuite` key appears in the root of JSON.
 //! - `properties` has `property` array. ts-junit2json has `property` array of object directly.
 //! - `skipped`, `error`, `failure` are object, not array of object.
 //! - If XML has undefined tag, it will be ignored. ts-junit2json will be converted to JSON if possible.
-//! 
+//!
 //! Referenced JUnit XML Schema:
 //! - <https://llg.cubic.org/docs/junit/>
 //! - <https://github.com/testmoapp/junitxml/tree/main>
 
-use std::default;
-use std::io;
 use cli::PossibleFilterTags;
-use quick_xml;
 use quick_xml::de;
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
+use std::default;
+use std::io;
 
 pub mod cli;
 
@@ -153,11 +152,11 @@ fn trim_default_items<T: default::Default + PartialEq + Clone>(vec: &mut Option<
             *vec = v
                 .iter()
                 .filter(|&item| item != &Default::default())
-                .map(|item| item.clone())
+                .cloned()
                 .collect::<Vec<_>>()
                 .into();
-        },
-        None => {},
+        }
+        None => {}
     }
 }
 
@@ -169,7 +168,7 @@ fn trim_default_items<T: default::Default + PartialEq + Clone>(vec: &mut Option<
 ///     </testsuite>
 /// </testsuites>
 /// ```
-/// 
+///
 /// ```xml
 /// <testsuite name="testsuite1" tests=1 time=0.1>
 /// </testsuite>
@@ -178,15 +177,15 @@ fn trim_default_items<T: default::Default + PartialEq + Clone>(vec: &mut Option<
 #[serde(rename_all = "lowercase")]
 pub enum TestSuitesOrTestSuite {
     TestSuites(TestSuites),
-    TestSuite(TestSuite),
+    TestSuite(Box<TestSuite>),
 }
 impl TestSuitesOrTestSuite {
     /// Remove all `system-out` and `system-err` from each `testsuite` and `testcase`.
-    /// 
+    ///
     /// # Examples
     /// ```
     /// use junit2json;
-    /// 
+    ///
     /// let xml = r#"
     ///   <?xml version="1.0" encoding="UTF-8"?>
     ///   <testsuites>
@@ -207,14 +206,14 @@ impl TestSuitesOrTestSuite {
     /// ]);
     /// println!("{:#?}", testsuites);
     /// ```
-    pub fn filter_tags(&mut self, tags: &Vec<PossibleFilterTags>) {
+    pub fn filter_tags(&mut self, tags: &[PossibleFilterTags]) {
         match self {
             TestSuitesOrTestSuite::TestSuites(ref mut testsuites) => {
                 testsuites.filter_tags(tags);
-            },
+            }
             TestSuitesOrTestSuite::TestSuite(ref mut testsuite) => {
                 testsuite.filter_tags(tags);
-            },
+            }
         }
     }
 }
@@ -244,18 +243,16 @@ pub struct TestSuites {
 impl TestSuites {
     pub fn trim_empty_items(&mut self) {
         match &mut self.testsuite {
-            Some(testsuite) => {
-                testsuite.into_iter().for_each(|item| item.trim_empty_items())
-            }
-            None => {},
+            Some(testsuite) => testsuite
+                .iter_mut()
+                .for_each(|item| item.trim_empty_items()),
+            None => {}
         }
     }
-    pub fn filter_tags(&mut self, tags: &Vec<PossibleFilterTags>) {
+    pub fn filter_tags(&mut self, tags: &[PossibleFilterTags]) {
         match &mut self.testsuite {
-            Some(testsuite) => {
-                testsuite.into_iter().for_each(|item| item.filter_tags(tags))
-            }
-            None => {},
+            Some(testsuite) => testsuite.iter_mut().for_each(|item| item.filter_tags(tags)),
+            None => {}
         }
     }
 }
@@ -319,16 +316,14 @@ impl TestSuite {
                     self.properties = None;
                 }
             }
-            None => {},
+            None => {}
         }
         match &mut self.testcase {
-            Some(testcase) => {
-                testcase.into_iter().for_each(|item| item.trim_empty_items())
-            }
-            None => {},
+            Some(testcase) => testcase.iter_mut().for_each(|item| item.trim_empty_items()),
+            None => {}
         }
     }
-    pub fn filter_tags(&mut self, tags: &Vec<PossibleFilterTags>) {
+    pub fn filter_tags(&mut self, tags: &[PossibleFilterTags]) {
         for tag in tags.iter() {
             match tag {
                 PossibleFilterTags::SystemOut => self.system_out = None,
@@ -336,10 +331,8 @@ impl TestSuite {
             }
         }
         match &mut self.testcase {
-            Some(testcase) => {
-                testcase.into_iter().for_each(|item| item.filter_tags(tags))
-            }
-            None => {},
+            Some(testcase) => testcase.iter_mut().for_each(|item| item.filter_tags(tags)),
+            None => {}
         }
     }
 }
@@ -381,7 +374,7 @@ impl TestCase {
         trim_default_items(&mut self.system_out);
         trim_default_items(&mut self.system_err);
     }
-    pub fn filter_tags(&mut self, tags: &Vec<PossibleFilterTags>) {
+    pub fn filter_tags(&mut self, tags: &[PossibleFilterTags]) {
         for tag in tags.iter() {
             match tag {
                 PossibleFilterTags::SystemOut => self.system_out = None,
@@ -430,7 +423,7 @@ impl Properties {
 }
 
 /// It corresponds to `<property>`
-/// 
+///
 /// ```xml
 /// <property name="foo" value="bar" />
 /// ```
@@ -444,14 +437,14 @@ pub struct Property {
 }
 
 /// Deserialize JUnit XML from a reader.
-/// 
+///
 /// # Examples
 /// ```
 /// use junit2json;
 /// use std::process;
 /// use std::fs::File;
 /// use std::io::BufReader;
-/// 
+///
 /// let path = "tests/fixtures/cargo-nextest.xml";
 /// let file = File::open(path).unwrap_or_else(|msg| {
 ///     eprintln!("File::open error: {}", msg);
@@ -465,23 +458,24 @@ pub struct Property {
 /// println!("{:#?}", testsuites);
 /// ```
 pub fn from_reader<T>(reader: io::BufReader<T>) -> Result<TestSuitesOrTestSuite, quick_xml::DeError>
-    where T: io::Read
-    {
+where
+    T: io::Read,
+{
     let mut root: TestSuitesOrTestSuite = de::from_reader(reader)?;
     match root {
-        TestSuitesOrTestSuite::TestSuites(ref mut testsuites) => { testsuites.trim_empty_items() },
-        TestSuitesOrTestSuite::TestSuite(ref mut testsuite) => { testsuite.trim_empty_items() },
+        TestSuitesOrTestSuite::TestSuites(ref mut testsuites) => testsuites.trim_empty_items(),
+        TestSuitesOrTestSuite::TestSuite(ref mut testsuite) => testsuite.trim_empty_items(),
     }
     Ok(root)
 }
 
 /// Deserialize JUnit XML from a string.
-/// 
+///
 /// # Examples
 /// ```
 /// use junit2json;
 /// use std::process;
-/// 
+///
 /// let xml = r#"
 ///     <?xml version="1.0" encoding="UTF-8"?>
 ///     <testsuites>
