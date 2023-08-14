@@ -43,7 +43,7 @@ jobs:
 
     # Post process
     - name: Set status failure when format or lint step failed
-      if: steps.format.outcome != 'success' || steps.lint.outcome != 'sucess'
+      if: steps.format.outcome != 'success' || steps.lint.outcome != 'success'
       run: exit 1
 
   build:
