@@ -1,5 +1,5 @@
 use clap::Parser;
-use junit2json;
+
 use junit2json::cli;
 use std::fs::File;
 use std::io::BufReader;

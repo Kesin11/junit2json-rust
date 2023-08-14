@@ -2,7 +2,7 @@ use junit2json::*;
 use pretty_assertions::assert_eq;
 
 fn create_fixture() -> &'static str {
-    return r#"
+    r#"
       <?xml version="1.0" encoding="UTF-8"?>
       <testsuites>
           <testsuite name="suite1">
@@ -14,7 +14,7 @@ fn create_fixture() -> &'static str {
               </testcase>
           </testsuite>
       </testsuites>
-  "#;
+  "#
 }
 
 #[test]

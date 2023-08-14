@@ -1,4 +1,4 @@
-use insta;
+
 use std::fs::File;
 use std::io::BufReader;
 

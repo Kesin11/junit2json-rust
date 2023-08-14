@@ -138,7 +138,6 @@
 //! - <https://github.com/testmoapp/junitxml/tree/main>
 
 use cli::PossibleFilterTags;
-use quick_xml;
 use quick_xml::de;
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
@@ -153,7 +152,7 @@ fn trim_default_items<T: default::Default + PartialEq + Clone>(vec: &mut Option<
             *vec = v
                 .iter()
                 .filter(|&item| item != &Default::default())
-                .map(|item| item.clone())
+                .cloned()
                 .collect::<Vec<_>>()
                 .into();
         }
@@ -245,16 +244,14 @@ impl TestSuites {
     pub fn trim_empty_items(&mut self) {
         match &mut self.testsuite {
             Some(testsuite) => testsuite
-                .into_iter()
+                .iter_mut()
                 .for_each(|item| item.trim_empty_items()),
             None => {}
         }
     }
     pub fn filter_tags(&mut self, tags: &Vec<PossibleFilterTags>) {
         match &mut self.testsuite {
-            Some(testsuite) => testsuite
-                .into_iter()
-                .for_each(|item| item.filter_tags(tags)),
+            Some(testsuite) => testsuite.iter_mut().for_each(|item| item.filter_tags(tags)),
             None => {}
         }
     }
@@ -322,9 +319,7 @@ impl TestSuite {
             None => {}
         }
         match &mut self.testcase {
-            Some(testcase) => testcase
-                .into_iter()
-                .for_each(|item| item.trim_empty_items()),
+            Some(testcase) => testcase.iter_mut().for_each(|item| item.trim_empty_items()),
             None => {}
         }
     }
@@ -336,7 +331,7 @@ impl TestSuite {
             }
         }
         match &mut self.testcase {
-            Some(testcase) => testcase.into_iter().for_each(|item| item.filter_tags(tags)),
+            Some(testcase) => testcase.iter_mut().for_each(|item| item.filter_tags(tags)),
             None => {}
         }
     }

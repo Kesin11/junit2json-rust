@@ -226,12 +226,10 @@ fn testsuite_property_has_some_fields() {
                         Property {
                             name: Some("hello".to_string()),
                             value: Some("bonjour".to_string()),
-                            ..Default::default()
                         },
                         Property {
                             name: Some("world".to_string()),
                             value: Some("monde".to_string()),
-                            ..Default::default()
                         }
                     ]),
                 }),
@@ -265,7 +263,6 @@ fn some_testsuite_property_are_empty() {
                     property: Some(vec![Property {
                         name: Some("hello".to_string()),
                         value: Some("bonjour".to_string()),
-                        ..Default::default()
                     }]),
                 }),
                 ..Default::default()
