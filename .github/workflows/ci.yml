@@ -47,7 +47,13 @@ jobs:
       run: exit 1
 
   build:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        job:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+    runs-on: ${{ matrix.job.os }}
     steps:
     - name: Show versions
       run: |
@@ -56,4 +62,10 @@ jobs:
     - uses: actions/checkout@v3
 
     - name: Build
-      run: cargo build --release
+      run: cargo build --release --target ${{ matrix.job.target }}
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+          name: ${{ matrix.job.target }}
+          path: target/${{ matrix.job.target }}/release/junit2json
