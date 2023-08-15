@@ -53,6 +53,7 @@ jobs:
         job:
           - os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
+    name: Build ${{ matrix.job.target }}
     runs-on: ${{ matrix.job.os }}
     steps:
     - name: Show versions
