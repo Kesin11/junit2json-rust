@@ -18,6 +18,7 @@ jobs:
         rustc --version
         cargo --version
     - uses: actions/checkout@v3
+    - uses: Swatinem/rust-cache@v2
 
     # Execute
     - name: Format check
@@ -47,13 +48,32 @@ jobs:
       run: exit 1
 
   build:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        job:
+          - os: ubuntu-20.04
+            target: x86_64-unknown-linux-gnu
+          - os: macos-latest
+            target: x86_64-apple-darwin
+          - os: macos-latest
+            target: aarch64-apple-darwin
+    name: Build ${{ matrix.job.target }}
+    runs-on: ${{ matrix.job.os }}
     steps:
     - name: Show versions
       run: |
         rustc --version
         cargo --version
     - uses: actions/checkout@v3
+    - name: Setup rust build target
+      run: rustup target add ${{ matrix.job.target }}
 
     - name: Build
-      run: cargo build --release
+      run: cargo build --release --target ${{ matrix.job.target }}
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+          name: ${{ matrix.job.target }}
+          path: target/${{ matrix.job.target }}/release/junit2json
