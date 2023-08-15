@@ -1,0 +1,48 @@
+name: Release
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+permissions:
+  contents: write
+  deployments: write
+jobs:
+  draft_release:
+    runs-on: ubuntu-latest
+    outputs:
+      tag_name: ${{ steps.release-drafter.outputs.tag_name }}
+      version_name: ${{ env.VERSION }}
+    steps:
+      # Get next version
+      - uses: release-drafter/release-drafter@v5
+        id: release-drafter
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # Create version string from tag (v1.0.0 -> 1.0.0)
+      - name: Create version string
+        run: |
+          export TAG_NAME=${{ release-drafter.outputs.tag_name }}
+          echo "VERSION=${TAG_NAME:1}" >> $GITHUB_ENV
+
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    needs: draft_release
+    steps:
+
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          ref: main
+
+      # NOTE: build and upload assets here
+
+      - uses: release-drafter/release-drafter@v5
+        with:
+          publish: true
+          prerelease: true # DEBUG
+          tag: v${{ needs.draft_release.outputs.version_name }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
