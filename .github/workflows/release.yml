@@ -22,22 +22,52 @@ jobs:
       # Create version string from tag (v1.0.0 -> 1.0.0)
       - name: Create version string
         run: |
-          export TAG_NAME=${{ release-drafter.outputs.tag_name }}
+          export TAG_NAME=${{ steps.release-drafter.outputs.tag_name }}
           echo "VERSION=${TAG_NAME:1}" >> $GITHUB_ENV
 
-  release:
+  upload_assets:
+    strategy:
+      fail-fast: false
+      matrix:
+        job:
+          - os: ubuntu-20.04
+            target: x86_64-unknown-linux-gnu
+          - os: macos-latest
+            target: x86_64-apple-darwin
+          - os: macos-latest
+            target: aarch64-apple-darwin
+    name: Upload assets ${{ matrix.job.target }}
+    runs-on: ${{ matrix.job.os }}
+    if: github.event_name == 'workflow_dispatch'
+    needs: draft_release
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup rust build target
+      run: rustup target add ${{ matrix.job.target }}
+
+    - name: Build
+      run: cargo build --release --target ${{ matrix.job.target }}
+
+    - name: Upload assets
+      run: |
+        ASSET_NAME="junit2json-rs-${{ needs.draft_release.outputs.version_name }}-${{ matrix.job.target}}.tar.gz"
+        cp target/${{ matrix.job.target }}/release/junit2json ./junit2json
+        tar -zcvf "${ASSET_NAME}" junit2json
+        gh release upload v${{ needs.draft_release.outputs.version_name }} "${ASSET_NAME}" --clobber
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  publish_release:
     name: Release
     runs-on: ubuntu-latest
     if: github.event_name == 'workflow_dispatch'
-    needs: draft_release
+    needs: [draft_release, upload_assets]
     steps:
 
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
           ref: main
-
-      # NOTE: build and upload assets here
 
       - uses: release-drafter/release-drafter@v5
         with:
