@@ -22,7 +22,7 @@ jobs:
       # Create version string from tag (v1.0.0 -> 1.0.0)
       - name: Create version string
         run: |
-          export TAG_NAME=${{ release-drafter.outputs.tag_name }}
+          export TAG_NAME=${{ steps.release-drafter.outputs.tag_name }}
           echo "VERSION=${TAG_NAME:1}" >> $GITHUB_ENV
 
   release:
