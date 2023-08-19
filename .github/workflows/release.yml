@@ -25,54 +25,19 @@ jobs:
           export TAG_NAME=${{ steps.release-drafter.outputs.tag_name }}
           echo "VERSION=${TAG_NAME:1}" >> $GITHUB_ENV
 
-  upload_assets:
-    strategy:
-      fail-fast: false
-      matrix:
-        job:
-          - os: ubuntu-20.04
-            target: x86_64-unknown-linux-gnu
-          - os: macos-latest
-            target: x86_64-apple-darwin
-          - os: macos-latest
-            target: aarch64-apple-darwin
-    name: Upload assets ${{ matrix.job.target }}
-    runs-on: ${{ matrix.job.os }}
-    if: github.event_name == 'workflow_dispatch'
-    needs: draft_release
-    steps:
-    - uses: actions/checkout@v3
-    - name: Setup rust build target
-      run: rustup target add ${{ matrix.job.target }}
-    - name: Setup cargo release
-      run: cargo install cargo-release
-
-    - name: Update version
-      # run: cargo release version --execute --no-confirm ${{ needs.draft_release.outputs.version_name }}
-      run: cargo release version --execute --no-confirm beta
-    - name: Build
-      run: cargo build --release --target ${{ matrix.job.target }}
-
-    - name: Upload assets
-      run: |
-        ASSET_NAME="junit2json-rs-${{ needs.draft_release.outputs.version_name }}-${{ matrix.job.target}}.tar.gz"
-        cp target/${{ matrix.job.target }}/release/junit2json ./junit2json
-        tar -zcvf "${ASSET_NAME}" junit2json
-        gh release upload ${{ needs.draft_release.outputs.tag_name }} "${ASSET_NAME}" --clobber
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
   publish_release:
     name: Release
     environment: prod
     runs-on: ubuntu-latest
     if: github.event_name == 'workflow_dispatch'
-    needs: [draft_release, upload_assets]
+    needs: [draft_release]
     steps:
       - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-          ref: ${{ github.ref }}
+      - name: Setup git author
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+      - uses: Swatinem/rust-cache@v2
       - name: Setup cargo release
         run: cargo install cargo-release
 
@@ -88,3 +53,35 @@ jobs:
           tag: ${{ needs.draft_release.outputs.tag_name }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  upload_assets:
+    strategy:
+      fail-fast: false
+      matrix:
+        job:
+          - os: ubuntu-20.04
+            target: x86_64-unknown-linux-gnu
+          - os: macos-latest
+            target: x86_64-apple-darwin
+          - os: macos-latest
+            target: aarch64-apple-darwin
+    name: Upload assets ${{ matrix.job.target }}
+    runs-on: ${{ matrix.job.os }}
+    if: github.event_name == 'workflow_dispatch'
+    needs: ["draft_release", "publish_release"]
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup rust build target
+      run: rustup target add ${{ matrix.job.target }}
+
+    - name: Build
+      run: cargo build --release --target ${{ matrix.job.target }}
+
+    - name: Upload assets
+      run: |
+        ASSET_NAME="junit2json-rs-${{ needs.draft_release.outputs.version_name }}-${{ matrix.job.target}}.tar.gz"
+        cp target/${{ matrix.job.target }}/release/junit2json ./junit2json
+        tar -zcvf "${ASSET_NAME}" junit2json
+        gh release upload ${{ needs.draft_release.outputs.tag_name }} "${ASSET_NAME}" --clobber
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
