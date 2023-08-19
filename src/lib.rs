@@ -15,12 +15,12 @@
 //!
 //! # Install
 //! ```
-//! cargo install --git https://github.com/Kesin11/junit2json-rs
+//! cargo install junit2json
 //! ```
 //!
 //! # Usage
 //! ```
-//! junit2json-rs --pretry <junit_xml_file>
+//! junit2json --pretry <junit_xml_file>
 //! ```
 //!
 //! # Output example
@@ -109,19 +109,19 @@
 //! Show testsuites test count
 //!
 //! ```
-//! junit2json-rs --pretry <junit_xml_file> | jq .testsuites.tests
+//! junit2json <junit_xml_file> | jq .testsuites.tests
 //! ```
 //!
 //! Show testsuite names
 //!
 //! ```
-//! junit2json-rs --pretry <junit_xml_file> | jq .testsuites.testsuite[].name
+//! junit2json <junit_xml_file> | jq .testsuites.testsuite[].name
 //! ```
 //!
 //! Show testcase classnames
 //!
 //! ```
-//! npx junit2json junit.xml | jq .testsuites.testsuite[].testcase[].classname
+//! junit2json <junit_xml_file> | jq .testsuites.testsuite[].testcase[].classname
 //! ```
 //!
 //! # Notice
