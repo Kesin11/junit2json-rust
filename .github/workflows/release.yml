@@ -25,6 +25,38 @@ jobs:
           export TAG_NAME=${{ steps.release-drafter.outputs.tag_name }}
           echo "VERSION=${TAG_NAME:1}" >> $GITHUB_ENV
 
+  publish_release:
+    name: Release
+    environment:
+        name: prod
+        url: https://crates.io/crates/junit2json
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    needs: [draft_release]
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          ref: ${{ github.ref }}
+      - name: Setup git author
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+      - uses: Swatinem/rust-cache@v2
+      - name: Setup cargo release
+        run: cargo install cargo-release
+
+      - name: Publish to crate.io
+        run: cargo release --no-tag -vv --execute --no-confirm ${{ needs.draft_release.outputs.version_name }}
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+      - uses: release-drafter/release-drafter@v5
+        with:
+          publish: true
+          tag: ${{ needs.draft_release.outputs.tag_name }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   upload_assets:
     strategy:
       fail-fast: false
@@ -39,7 +71,7 @@ jobs:
     name: Upload assets ${{ matrix.job.target }}
     runs-on: ${{ matrix.job.os }}
     if: github.event_name == 'workflow_dispatch'
-    needs: draft_release
+    needs: ["draft_release", "publish_release"]
     steps:
     - uses: actions/checkout@v3
     - name: Setup rust build target
@@ -53,26 +85,6 @@ jobs:
         ASSET_NAME="junit2json-rs-${{ needs.draft_release.outputs.version_name }}-${{ matrix.job.target}}.tar.gz"
         cp target/${{ matrix.job.target }}/release/junit2json ./junit2json
         tar -zcvf "${ASSET_NAME}" junit2json
-        gh release upload v${{ needs.draft_release.outputs.version_name }} "${ASSET_NAME}" --clobber
+        gh release upload ${{ needs.draft_release.outputs.tag_name }} "${ASSET_NAME}" --clobber
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  publish_release:
-    name: Release
-    runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch'
-    needs: [draft_release, upload_assets]
-    steps:
-
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-          ref: main
-
-      - uses: release-drafter/release-drafter@v5
-        with:
-          publish: true
-          prerelease: true # DEBUG
-          tag: v${{ needs.draft_release.outputs.version_name }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
