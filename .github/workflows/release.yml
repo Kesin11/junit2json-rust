@@ -47,14 +47,12 @@ jobs:
         run: cargo install cargo-release
 
       - name: Publish to crate.io
-        # run: cargo release --no-tag -vv --execute --no-confirm ${{ needs.draft_release.outputs.version_name }}
-        run: cargo release --no-tag -vv --execute --no-confirm beta
+        run: cargo release --no-tag -vv --execute --no-confirm ${{ needs.draft_release.outputs.version_name }}
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
       - uses: release-drafter/release-drafter@v5
         with:
           publish: true
-          prerelease: true # DEBUG
           tag: ${{ needs.draft_release.outputs.tag_name }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
