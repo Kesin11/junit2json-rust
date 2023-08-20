@@ -27,7 +27,9 @@ jobs:
 
   publish_release:
     name: Release
-    environment: prod
+    environment:
+        name: prod
+        url: https://crates.io/crates/junit2json
     runs-on: ubuntu-latest
     if: github.event_name == 'workflow_dispatch'
     needs: [draft_release]
