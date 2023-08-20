@@ -64,10 +64,16 @@ jobs:
         job:
           - os: ubuntu-20.04
             target: x86_64-unknown-linux-gnu
+            bin: junit2json
+          - os: ubuntu-20.04
+            target: wasm32-wasi
+            bin: junit2json.wasm
           - os: macos-latest
             target: x86_64-apple-darwin
+            bin: junit2json
           - os: macos-latest
             target: aarch64-apple-darwin
+            bin: junit2json
     name: Upload assets ${{ matrix.job.target }}
     runs-on: ${{ matrix.job.os }}
     if: github.event_name == 'workflow_dispatch'
@@ -78,13 +84,19 @@ jobs:
       run: rustup target add ${{ matrix.job.target }}
 
     - name: Build
-      run: cargo build --release --target ${{ matrix.job.target }}
+      run: |
+        if [[ "${{ matrix.job.target }}" == "wasm32-wasi" ]]; then
+          cargo install cargo-wasi
+          cargo wasi build --release --target ${{ matrix.job.target }}
+        else
+          cargo build --release --target ${{ matrix.job.target }}
+        fi
 
     - name: Upload assets
       run: |
         ASSET_NAME="junit2json-rs-${{ needs.draft_release.outputs.version_name }}-${{ matrix.job.target}}.tar.gz"
-        cp target/${{ matrix.job.target }}/release/junit2json ./junit2json
-        tar -zcvf "${ASSET_NAME}" junit2json
+        cp target/${{ matrix.job.target }}/release/${{ matrix.job.bin }} ./${{ matrix.job.bin }}
+        tar -zcvf "${ASSET_NAME}" ${{ matrix.job.bin }}
         gh release upload ${{ needs.draft_release.outputs.tag_name }} "${ASSET_NAME}" --clobber
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

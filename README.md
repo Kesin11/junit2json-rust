@@ -21,7 +21,7 @@ cargo install junit2json
 
 # Usage
 ```shell
-junit2json --pretry <junit_xml_file>
+junit2json -p <junit_xml_file>
 ```
 
 # Output example
@@ -155,14 +155,31 @@ Options:
   -V, --version                    Print version
 ```
 
+# WASI
+junit2json-rs also provides WASI executable.
+
+If you have wasm runtime (ex. wasmtime), you can execute `junit2json.wasm` that can download from [GitHub Releases](https://github.com/Kesin11/junit2json-rs/releases) instead of native binary.
+
+```shell
+wasmtime junit2json.wasm --dir=. -- -p <junit_xml_file>
+```
+
 # Development
 ## Setup
 You can use DevContainer or Codespaces. Please see [devcontainer.json](./.devcontainer/devcontainer.json).
 
 ## Build
+Build native binary
+
 ```bash
 cargo build
 cargo build --release
+```
+
+Build WASI
+
+```bash
+cargo wasi build --release
 ```
 
 ## Test
