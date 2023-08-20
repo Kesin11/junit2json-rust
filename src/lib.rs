@@ -20,7 +20,7 @@
 //!
 //! # Usage
 //! ```
-//! junit2json --pretry <junit_xml_file>
+//! junit2json -p <junit_xml_file>
 //! ```
 //!
 //! # Output example
@@ -136,6 +136,16 @@
 //! Referenced JUnit XML Schema:
 //! - <https://llg.cubic.org/docs/junit/>
 //! - <https://github.com/testmoapp/junitxml/tree/main>
+//!
+//! # WASI
+//! junit2json-rs also provides WASI executable.
+//!
+//! If you have wasm runtime (ex. wasmtime), you can execute `junit2json.wasm` that can download from [GitHub Releases](https://github.com/Kesin11/junit2json-rs/releases) instead of native binary.
+//!
+//! ```
+//! wasmtime junit2json.wasm --dir=. -- -p <junit_xml_file>
+//! ```
+//!
 
 use cli::PossibleFilterTags;
 use quick_xml::de;
