@@ -1,6 +1,6 @@
 [package]
 name = "junit2json"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 authors = ["Kenta Kase <kesin1202000@gmail.com>"]
 license = "MIT"
@@ -20,3 +20,6 @@ clap = { version = "4.3.19", features = ["derive"] }
 [dev-dependencies]
 pretty_assertions = "1.4.0"
 insta = { version = "1.31.0", features = ["json", "glob"] }
+
+[package.metadata.release]
+pre-release-commit-message = "[skip ci]: Release {{crate_name}} version {{version}}"
