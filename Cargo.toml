@@ -1,6 +1,6 @@
 [package]
 name = "junit2json"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 authors = ["Kenta Kase <kesin1202000@gmail.com>"]
 license = "MIT"
