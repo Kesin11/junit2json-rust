@@ -38,6 +38,9 @@ jobs:
         with:
           fetch-depth: 0
           ref: ${{ github.ref }}
+          # Use PAT for bypass ruleset guard when git push by cargo release
+          # see: https://github.com/orgs/community/discussions/13836
+          token: ${{ secrets.JUNIT2JSON_RS_PAT }}
       - name: Setup git author
         run: |
           git config user.name github-actions
