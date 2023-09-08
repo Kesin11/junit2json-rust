@@ -34,7 +34,7 @@ jobs:
     if: github.event_name == 'workflow_dispatch'
     needs: [draft_release]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           ref: ${{ github.ref }}
@@ -82,7 +82,7 @@ jobs:
     if: github.event_name == 'workflow_dispatch'
     needs: ["draft_release", "publish_release"]
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Setup rust build target
       run: rustup target add ${{ matrix.job.target }}
 
