@@ -19,7 +19,7 @@ clap = { version = "4.4.6", features = ["derive"] }
 
 [dev-dependencies]
 pretty_assertions = "1.4.0"
-insta = { version = "1.32.0", features = ["json", "glob"] }
+insta = { version = "1.33.0", features = ["json", "glob"] }
 
 [package.metadata.release]
 pre-release-commit-message = "[skip ci]: Release {{crate_name}} version {{version}}"
