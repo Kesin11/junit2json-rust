@@ -39,7 +39,7 @@ jobs:
     - name: test
       run: |
         cargo nextest run
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       if: always()
       with:
         name: junit test reports
@@ -89,7 +89,7 @@ jobs:
         fi
 
     - name: Upload Artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
           name: ${{ matrix.job.target }}
           path: target/${{ matrix.job.target }}/release/${{ matrix.job.bin }}
