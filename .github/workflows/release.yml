@@ -15,7 +15,7 @@ jobs:
       version_name: ${{ env.VERSION }}
     steps:
       # Get next version
-      - uses: release-drafter/release-drafter@v5
+      - uses: release-drafter/release-drafter@v6
         id: release-drafter
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -58,7 +58,7 @@ jobs:
         run: cargo release --no-tag -vv --execute --no-confirm ${{ needs.draft_release.outputs.version_name }}
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
-      - uses: release-drafter/release-drafter@v5
+      - uses: release-drafter/release-drafter@v6
         with:
           publish: true
           tag: ${{ needs.draft_release.outputs.tag_name }}
