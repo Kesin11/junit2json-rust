@@ -28,8 +28,8 @@ jobs:
   publish_release:
     name: Release
     environment:
-        name: prod
-        url: https://crates.io/crates/junit2json
+      name: prod
+      url: https://crates.io/crates/junit2json
     runs-on: ubuntu-latest
     if: github.event_name == 'workflow_dispatch'
     needs: [draft_release]
@@ -45,7 +45,7 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.ref }}
           token: ${{ steps.app-token.outputs.token }}
-          
+
       - name: Setup git author
         run: |
           git config user.name github-actions
@@ -87,24 +87,24 @@ jobs:
     if: github.event_name == 'workflow_dispatch'
     needs: ["draft_release", "publish_release"]
     steps:
-    - uses: actions/checkout@v4
-    - name: Setup rust build target
-      run: rustup target add ${{ matrix.job.target }}
+      - uses: actions/checkout@v4
+      - name: Setup rust build target
+        run: rustup target add ${{ matrix.job.target }}
 
-    - name: Build
-      run: |
-        if [[ "${{ matrix.job.target }}" == "wasm32-wasi" ]]; then
-          cargo install cargo-wasi
-          cargo wasi build --release --target ${{ matrix.job.target }}
-        else
-          cargo build --release --target ${{ matrix.job.target }}
-        fi
+      - name: Build
+        run: |
+          if [[ "${{ matrix.job.target }}" == "wasm32-wasi" ]]; then
+            cargo install cargo-wasi
+            cargo wasi build --release --target ${{ matrix.job.target }}
+          else
+            cargo build --release --target ${{ matrix.job.target }}
+          fi
 
-    - name: Upload assets
-      run: |
-        ASSET_NAME="junit2json-rs-${{ needs.draft_release.outputs.version_name }}-${{ matrix.job.target}}.tar.gz"
-        cp target/${{ matrix.job.target }}/release/${{ matrix.job.bin }} ./${{ matrix.job.bin }}
-        tar -zcvf "${ASSET_NAME}" ${{ matrix.job.bin }}
-        gh release upload ${{ needs.draft_release.outputs.tag_name }} "${ASSET_NAME}" --clobber
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload assets
+        run: |
+          ASSET_NAME="junit2json-rs-${{ needs.draft_release.outputs.version_name }}-${{ matrix.job.target}}.tar.gz"
+          cp target/${{ matrix.job.target }}/release/${{ matrix.job.bin }} ./${{ matrix.job.bin }}
+          tar -zcvf "${ASSET_NAME}" ${{ matrix.job.bin }}
+          gh release upload ${{ needs.draft_release.outputs.tag_name }} "${ASSET_NAME}" --clobber
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
