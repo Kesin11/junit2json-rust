@@ -93,3 +93,10 @@ jobs:
         with:
           name: ${{ matrix.job.target }}
           path: target/${{ matrix.job.target }}/release/${{ matrix.job.bin }}
+
+
+  actions-timeline:
+    needs: [test, build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: Kesin11/actions-timeline@v2
