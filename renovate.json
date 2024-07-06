@@ -3,6 +3,6 @@
   "extends": [
     "github>Kesin11/renovate-config:oss",
     ":prConcurrentLimit10",
-    "schedule:weekends"
+    "config:semverAllMonthly"
   ]
 }
