@@ -4,12 +4,12 @@ on:
     branches:
       - main
   workflow_dispatch:
-permissions:
-  contents: write
-  deployments: write
 jobs:
   draft_release:
     runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+      deployments: write
     outputs:
       tag_name: ${{ steps.release-drafter.outputs.tag_name }}
       version_name: ${{ env.VERSION }}
@@ -31,6 +31,9 @@ jobs:
       name: prod
       url: https://crates.io/crates/junit2json
     runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+      deployments: write
     if: github.event_name == 'workflow_dispatch'
     needs: [draft_release]
     steps:
@@ -66,6 +69,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   upload_assets:
+    permissions:
+      id-token: write
+      attestations: write
+      contents: write
+      deployments: write
     strategy:
       fail-fast: false
       matrix:
@@ -108,3 +116,7 @@ jobs:
           gh release upload ${{ needs.draft_release.outputs.tag_name }} "${ASSET_NAME}" --clobber
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Generate artifact attestation
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: target/${{ matrix.job.target }}/release/${{ matrix.job.bin }}
