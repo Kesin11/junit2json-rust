@@ -9,7 +9,7 @@ permissions:
   deployments: write
 jobs:
   draft_release:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       tag_name: ${{ steps.release-drafter.outputs.tag_name }}
       version_name: ${{ env.VERSION }}
@@ -30,7 +30,7 @@ jobs:
     environment:
       name: prod
       url: https://crates.io/crates/junit2json
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     if: github.event_name == 'workflow_dispatch'
     needs: [draft_release]
     steps:
@@ -70,16 +70,16 @@ jobs:
       fail-fast: false
       matrix:
         job:
-          - os: ubuntu-20.04
+          - os: ubuntu-24.04
             target: x86_64-unknown-linux-gnu
             bin: junit2json
-          - os: ubuntu-20.04
+          - os: ubuntu-24.04
             target: wasm32-wasi
             bin: junit2json.wasm
-          - os: macos-14
+          - os: macos-15
             target: x86_64-apple-darwin
             bin: junit2json
-          - os: macos-14
+          - os: macos-15
             target: aarch64-apple-darwin
             bin: junit2json
     name: Upload assets ${{ matrix.job.target }}
