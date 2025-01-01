@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       # Setup
@@ -55,16 +55,16 @@ jobs:
       fail-fast: false
       matrix:
         job:
-          - os: ubuntu-20.04
+          - os: ubuntu-24.04
             target: x86_64-unknown-linux-gnu
             bin: junit2json
-          - os: ubuntu-20.04
+          - os: ubuntu-24.04
             target: wasm32-wasi
             bin: junit2json.wasm
-          - os: macos-14
+          - os: macos-15
             target: x86_64-apple-darwin
             bin: junit2json
-          - os: macos-14
+          - os: macos-15
             target: aarch64-apple-darwin
             bin: junit2json
     name: Build ${{ matrix.job.target }}
@@ -97,6 +97,6 @@ jobs:
 
   actions-timeline:
     needs: [test, build]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: Kesin11/actions-timeline@v2
